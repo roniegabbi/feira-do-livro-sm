@@ -149,6 +149,24 @@
     border:3px solid rgba(255,255,255,.85);box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
   .patrono .avatar img{width:100%;height:100%;object-fit:cover;display:block}
   @media(max-width:700px){.patrono .avatar{width:84px;height:84px;font-size:1.7rem}}
+
+  /* ===== Homenagens: Patrono e Homenageada ===== */
+  .homenagens{padding:64px 0;background:var(--lilas)}
+  .hom-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:780px){.hom-grid{grid-template-columns:1fr}}
+  .hom-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:28px;
+    display:flex;gap:22px;align-items:center;box-shadow:var(--shadow)}
+  @media(max-width:480px){.hom-card{flex-direction:column;text-align:center;gap:16px}}
+  .hom-foto{width:132px;height:132px;border-radius:50%;flex:0 0 auto;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;
+    font-weight:800;font-size:2.6rem;border:4px solid #fff;
+    background:linear-gradient(135deg,var(--coral),var(--gold));
+    box-shadow:0 12px 30px -10px rgba(61,37,87,.55)}
+  .hom-foto img{width:100%;height:100%;object-fit:cover;display:block}
+  .hom-body{min-width:0}
+  .hom-badge{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--coral);font-weight:800}
+  .hom-card h3{font-family:'Fraunces',serif;color:var(--roxo-2);font-size:1.55rem;margin:.25rem 0 .45rem;line-height:1.05}
+  .hom-card p{color:#5b5168;font-size:.93rem;line-height:1.55;margin:0}
   .patrono .pt-badge{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:800}
   .patrono h3{margin:.15rem 0;font-size:1.25rem;font-family:'Fraunces',serif}
   .patrono p{margin:0;opacity:.85;font-size:.9rem}
@@ -353,18 +371,34 @@
   <div class="marquee-track" id="marquee"></div>
 </div>
 
-<!-- ===== PATRONO ===== -->
-<div class="patrono">
+<!-- ===== HOMENAGENS: Patrono e Homenageada ===== -->
+<section class="homenagens" id="homenagens">
   <div class="wrap">
-    <div class="avatar" id="patAvatar">DT</div>
-    <div>
-      <div class="pt-badge">Patrono da 53ª edição</div>
-      <h3 id="patNome">Daniel Tonetto</h3>
-      <p id="patDesc">Lançamento de “A Cor Que Nos Separa: A Origem” · 11/08 · Noite do Patrono em 13/08, no Theatro Treze de Maio.</p>
+    <div class="sec-head reveal" style="max-width:none;text-align:center;margin-bottom:34px">
+      <span class="eye">Homenagens</span>
+      <h2>Patrono e Homenageada</h2>
+      <p style="margin-left:auto;margin-right:auto">As personalidades celebradas na 53ª edição da Feira do Livro de Santa Maria.</p>
     </div>
-    <a class="btn btn-p pt-cta" href="#programacao">Ver na programação →</a>
+    <div class="hom-grid reveal">
+      <article class="hom-card">
+        <div class="hom-foto" id="patAvatar">DT</div>
+        <div class="hom-body">
+          <span class="hom-badge">Patrono da 53ª edição</span>
+          <h3 id="patNome">Daniel Tonetto</h3>
+          <p id="patDesc">Lançamento de “A Cor Que Nos Separa: A Origem” · 11/08 · Noite do Patrono em 13/08, no Theatro Treze de Maio.</p>
+        </div>
+      </article>
+      <article class="hom-card">
+        <div class="hom-foto" id="homAvatar">RP</div>
+        <div class="hom-body">
+          <span class="hom-badge">Homenageada da 53ª edição</span>
+          <h3 id="homNome">Ruth Sopher Pereyron</h3>
+          <p id="homDesc">Professora aposentada da UFSM e diretora do Theatro Treze de Maio, referência na vida cultural de Santa Maria.</p>
+        </div>
+      </article>
+    </div>
   </div>
-</div>
+</section>
 
 <!-- ===== STATS ===== -->
 <section class="stats" style="padding:56px 0">
@@ -912,7 +946,11 @@ const co=new IntersectionObserver(es=>{es.forEach(en=>{
   }})},{threshold:.5});
 document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
 
-/* ============ PATRONO (dinâmico) ============ */
+/* ============ HOMENAGENS (dinâmico) ============ */
+function setFoto(elId,url,nome){
+  if(!url)return;const a=document.getElementById(elId);if(!a)return;
+  a.innerHTML=`<img src="${url}" alt="${(nome||'').replace(/"/g,'')}">`;
+}
 async function loadPatrono(){
   if(!window.fdl)return;
   const {data}=await window.fdl.from('fl_config').select('*');
@@ -920,11 +958,10 @@ async function loadPatrono(){
   const m={};data.forEach(r=>m[r.chave]=r.valor);
   if(m.patrono_nome)document.getElementById('patNome').textContent=m.patrono_nome;
   if(m.patrono_desc)document.getElementById('patDesc').textContent=m.patrono_desc;
-  if(m.patrono_foto){
-    const a=document.getElementById('patAvatar');
-    a.innerHTML=`<img src="${m.patrono_foto}" alt="${(m.patrono_nome||'Patrono').replace(/"/g,'')}" style="width:100%;height:100%;object-fit:cover">`;
-    a.style.overflow='hidden';a.style.padding='0';
-  }
+  setFoto('patAvatar',m.patrono_foto,m.patrono_nome);
+  if(m.homenageada_nome)document.getElementById('homNome').textContent=m.homenageada_nome;
+  if(m.homenageada_desc)document.getElementById('homDesc').textContent=m.homenageada_desc;
+  setFoto('homAvatar',m.homenageada_foto,m.homenageada_nome);
 }
 
 /* ============ INIT ============ */

@@ -122,7 +122,7 @@
     <button class="tab" data-tab="livros" onclick="setTab('livros')">Livros</button>
     <button class="tab" data-tab="fotos" onclick="setTab('fotos')">Galeria de fotos</button>
     <button class="tab" data-tab="videos" onclick="setTab('videos')">Vídeos</button>
-    <button class="tab" data-tab="patrono" onclick="setTab('patrono')">Patrono</button>
+    <button class="tab" data-tab="patrono" onclick="setTab('patrono')">Homenagens</button>
     <button class="tab" data-tab="news" onclick="setTab('news')">Newsletter</button>
   </div>
   <main>
@@ -212,10 +212,10 @@
       </div>
     </section>
 
-    <!-- PATRONO -->
+    <!-- HOMENAGENS -->
     <section id="tab-patrono" class="panel hidden">
       <div class="card">
-        <h3>Patrono da Feira</h3>
+        <h3>Patrono</h3>
         <div class="form-field" style="text-align:center">
           <img id="pt-preview" src="" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;background:var(--lilas);display:none;margin:0 auto 6px">
           <div id="pt-noimg" style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--gold));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;font-weight:800;font-size:2rem;margin:0 auto 6px">DT</div>
@@ -226,8 +226,15 @@
         <button class="btn btn-p" onclick="savePatrono()">Salvar patrono</button>
       </div>
       <div class="card">
-        <h3>Como aparece no site</h3>
-        <p style="color:#6b6280;font-size:.9rem">A foto e os textos preenchidos aqui aparecem automaticamente na faixa do Patrono, no topo do site — sem precisar mexer no GitHub.</p>
+        <h3>Homenageada</h3>
+        <div class="form-field" style="text-align:center">
+          <img id="hm-preview" src="" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;background:var(--lilas);display:none;margin:0 auto 6px">
+          <div id="hm-noimg" style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--roxo-3),var(--magenta));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;font-weight:800;font-size:2rem;margin:0 auto 6px">RP</div>
+        </div>
+        <div class="form-field"><label>Foto da homenageada</label><input id="hm-file" type="file" accept="image/*" /></div>
+        <div class="form-field"><label>Nome</label><input id="hm-nome" placeholder="Nome da homenageada" /></div>
+        <div class="form-field"><label>Descrição</label><textarea id="hm-desc" rows="3"></textarea></div>
+        <button class="btn btn-p" onclick="saveHomenageada()">Salvar homenageada</button>
       </div>
     </section>
 
@@ -407,32 +414,56 @@ async function addVideo(){
   toast('Vídeo publicado');['vd-url','vd-titulo','vd-desc'].forEach(clr);loadVideos();
 }
 
-/* ===== PATRONO / CONFIG ===== */
-let PT_FOTO='';
+/* ===== HOMENAGENS / CONFIG ===== */
+let PT_FOTO='', HM_FOTO='';
 async function loadPatrono(){
   const {data}=await sb.from('fl_config').select('*');
   const m={};(data||[]).forEach(r=>m[r.chave]=r.valor);
+  // Patrono
   document.getElementById('pt-nome').value=m.patrono_nome||'';
   document.getElementById('pt-desc').value=m.patrono_desc||'';
   PT_FOTO=m.patrono_foto||'';
-  const img=document.getElementById('pt-preview'),no=document.getElementById('pt-noimg');
-  if(PT_FOTO){img.src=PT_FOTO;img.style.display='block';no.style.display='none';}
+  togglePreview('pt-preview','pt-noimg',PT_FOTO);
+  // Homenageada
+  document.getElementById('hm-nome').value=m.homenageada_nome||'';
+  document.getElementById('hm-desc').value=m.homenageada_desc||'';
+  HM_FOTO=m.homenageada_foto||'';
+  togglePreview('hm-preview','hm-noimg',HM_FOTO);
+}
+function togglePreview(imgId,noId,url){
+  const img=document.getElementById(imgId),no=document.getElementById(noId);
+  if(url){img.src=url;img.style.display='block';no.style.display='none';}
   else{img.style.display='none';no.style.display='flex';}
 }
+async function uploadImagem(fileInputId,prefix){
+  const f=document.getElementById(fileInputId).files[0];
+  if(!f)return null;
+  const path=prefix+'/'+Date.now()+'-'+safe(f.name);
+  const {error}=await sb.storage.from('imagens').upload(path,f,{upsert:true});
+  if(error){toast('Upload da foto: '+error.message,1);return null;}
+  return sb.storage.from('imagens').getPublicUrl(path).data.publicUrl;
+}
 async function savePatrono(){
-  const f=document.getElementById('pt-file').files[0];
-  if(f){const path='patrono/'+Date.now()+'-'+safe(f.name);
-    const {error:ue}=await sb.storage.from('imagens').upload(path,f,{upsert:true});
-    if(ue)return toast('Upload da foto: '+ue.message,1);
-    PT_FOTO=sb.storage.from('imagens').getPublicUrl(path).data.publicUrl;}
-  const rows=[
+  if(document.getElementById('pt-file').files[0]){
+    const u=await uploadImagem('pt-file','patrono');if(u)PT_FOTO=u;}
+  const {error}=await sb.from('fl_config').upsert([
     {chave:'patrono_nome',valor:val('pt-nome')},
     {chave:'patrono_desc',valor:val('pt-desc')},
     {chave:'patrono_foto',valor:PT_FOTO}
-  ];
-  const {error}=await sb.from('fl_config').upsert(rows,{onConflict:'chave'});
+  ],{onConflict:'chave'});
   if(error)return toast(error.message,1);
   toast('Patrono atualizado ✓');document.getElementById('pt-file').value='';loadPatrono();
+}
+async function saveHomenageada(){
+  if(document.getElementById('hm-file').files[0]){
+    const u=await uploadImagem('hm-file','homenageada');if(u)HM_FOTO=u;}
+  const {error}=await sb.from('fl_config').upsert([
+    {chave:'homenageada_nome',valor:val('hm-nome')},
+    {chave:'homenageada_desc',valor:val('hm-desc')},
+    {chave:'homenageada_foto',valor:HM_FOTO}
+  ],{onConflict:'chave'});
+  if(error)return toast(error.message,1);
+  toast('Homenageada atualizada ✓');document.getElementById('hm-file').value='';loadPatrono();
 }
 
 /* ===== NEWSLETTER ===== */
