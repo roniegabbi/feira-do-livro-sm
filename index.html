@@ -353,11 +353,11 @@
 <!-- ===== PATRONO ===== -->
 <div class="patrono">
   <div class="wrap">
-    <div class="avatar">DT</div>
+    <div class="avatar" id="patAvatar">DT</div>
     <div>
       <div class="pt-badge">Patrono da 53ª edição</div>
-      <h3>Daniel Tonetto</h3>
-      <p>Lançamento de “A Cor Que Nos Separa: A Origem” · 11/08 · Noite do Patrono em 13/08, no Theatro Treze de Maio.</p>
+      <h3 id="patNome">Daniel Tonetto</h3>
+      <p id="patDesc">Lançamento de “A Cor Que Nos Separa: A Origem” · 11/08 · Noite do Patrono em 13/08, no Theatro Treze de Maio.</p>
     </div>
     <a class="btn btn-p pt-cta" href="#programacao">Ver na programação →</a>
   </div>
@@ -909,9 +909,24 @@ const co=new IntersectionObserver(es=>{es.forEach(en=>{
   }})},{threshold:.5});
 document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
 
+/* ============ PATRONO (dinâmico) ============ */
+async function loadPatrono(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_config').select('*');
+  if(!data)return;
+  const m={};data.forEach(r=>m[r.chave]=r.valor);
+  if(m.patrono_nome)document.getElementById('patNome').textContent=m.patrono_nome;
+  if(m.patrono_desc)document.getElementById('patDesc').textContent=m.patrono_desc;
+  if(m.patrono_foto){
+    const a=document.getElementById('patAvatar');
+    a.innerHTML=`<img src="${m.patrono_foto}" alt="${(m.patrono_nome||'Patrono').replace(/"/g,'')}" style="width:100%;height:100%;object-fit:cover">`;
+    a.style.overflow='hidden';a.style.padding='0';
+  }
+}
+
 /* ============ INIT ============ */
 renderSchedule();renderBooks();updateCount();renderDrawer();
-loadFromSupabase();renderFotos();renderVideos();
+loadFromSupabase();renderFotos();renderVideos();loadPatrono();
 </script>
 </body>
 </html>

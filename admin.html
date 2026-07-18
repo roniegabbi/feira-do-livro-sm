@@ -122,6 +122,7 @@
     <button class="tab" data-tab="livros" onclick="setTab('livros')">Livros</button>
     <button class="tab" data-tab="fotos" onclick="setTab('fotos')">Galeria de fotos</button>
     <button class="tab" data-tab="videos" onclick="setTab('videos')">Vídeos</button>
+    <button class="tab" data-tab="patrono" onclick="setTab('patrono')">Patrono</button>
     <button class="tab" data-tab="news" onclick="setTab('news')">Newsletter</button>
   </div>
   <main>
@@ -211,6 +212,25 @@
       </div>
     </section>
 
+    <!-- PATRONO -->
+    <section id="tab-patrono" class="panel hidden">
+      <div class="card">
+        <h3>Patrono da Feira</h3>
+        <div class="form-field" style="text-align:center">
+          <img id="pt-preview" src="" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;background:var(--lilas);display:none;margin:0 auto 6px">
+          <div id="pt-noimg" style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--gold));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;font-weight:800;font-size:2rem;margin:0 auto 6px">DT</div>
+        </div>
+        <div class="form-field"><label>Foto do patrono</label><input id="pt-file" type="file" accept="image/*" /></div>
+        <div class="form-field"><label>Nome</label><input id="pt-nome" placeholder="Nome do patrono" /></div>
+        <div class="form-field"><label>Descrição</label><textarea id="pt-desc" rows="3"></textarea></div>
+        <button class="btn btn-p" onclick="savePatrono()">Salvar patrono</button>
+      </div>
+      <div class="card">
+        <h3>Como aparece no site</h3>
+        <p style="color:#6b6280;font-size:.9rem">A foto e os textos preenchidos aqui aparecem automaticamente na faixa do Patrono, no topo do site — sem precisar mexer no GitHub.</p>
+      </div>
+    </section>
+
     <!-- NEWSLETTER -->
     <section id="tab-news" class="panel hidden" style="grid-template-columns:1fr">
       <div class="card">
@@ -257,7 +277,7 @@ async function startApp(email){
   document.getElementById('appView').classList.remove('hidden');
   document.getElementById('whoami').textContent=email;
   await loadRefs();
-  loadEventos();loadLivros();loadFotos();loadVideos();loadNews();
+  loadEventos();loadLivros();loadFotos();loadVideos();loadNews();loadPatrono();
 }
 // sessão persistida?
 (async()=>{const {data}=await sb.auth.getSession();
@@ -267,7 +287,7 @@ async function startApp(email){
 /* ===== tabs ===== */
 function setTab(t){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
-  ['eventos','livros','fotos','videos','news'].forEach(x=>
+  ['eventos','livros','fotos','videos','patrono','news'].forEach(x=>
     document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
 }
 
@@ -385,6 +405,34 @@ async function addVideo(){
   const {error}=await sb.from('fl_videos').insert({url,titulo,descricao:val('vd-desc')||null,plataforma:detectPlataforma(url)});
   if(error)return toast(error.message,1);
   toast('Vídeo publicado');['vd-url','vd-titulo','vd-desc'].forEach(clr);loadVideos();
+}
+
+/* ===== PATRONO / CONFIG ===== */
+let PT_FOTO='';
+async function loadPatrono(){
+  const {data}=await sb.from('fl_config').select('*');
+  const m={};(data||[]).forEach(r=>m[r.chave]=r.valor);
+  document.getElementById('pt-nome').value=m.patrono_nome||'';
+  document.getElementById('pt-desc').value=m.patrono_desc||'';
+  PT_FOTO=m.patrono_foto||'';
+  const img=document.getElementById('pt-preview'),no=document.getElementById('pt-noimg');
+  if(PT_FOTO){img.src=PT_FOTO;img.style.display='block';no.style.display='none';}
+  else{img.style.display='none';no.style.display='flex';}
+}
+async function savePatrono(){
+  const f=document.getElementById('pt-file').files[0];
+  if(f){const path='patrono/'+Date.now()+'-'+safe(f.name);
+    const {error:ue}=await sb.storage.from('imagens').upload(path,f,{upsert:true});
+    if(ue)return toast('Upload da foto: '+ue.message,1);
+    PT_FOTO=sb.storage.from('imagens').getPublicUrl(path).data.publicUrl;}
+  const rows=[
+    {chave:'patrono_nome',valor:val('pt-nome')},
+    {chave:'patrono_desc',valor:val('pt-desc')},
+    {chave:'patrono_foto',valor:PT_FOTO}
+  ];
+  const {error}=await sb.from('fl_config').upsert(rows,{onConflict:'chave'});
+  if(error)return toast(error.message,1);
+  toast('Patrono atualizado ✓');document.getElementById('pt-file').value='';loadPatrono();
 }
 
 /* ===== NEWSLETTER ===== */
