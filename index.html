@@ -143,9 +143,12 @@
   /* patrono strip */
   .patrono{background:var(--roxo-2);color:#fff}
   .patrono .wrap{display:flex;align-items:center;gap:18px;padding:20px 22px;flex-wrap:wrap}
-  .patrono .avatar{width:52px;height:52px;border-radius:50%;flex:0 0 auto;
+  .patrono .avatar{width:104px;height:104px;border-radius:50%;flex:0 0 auto;overflow:hidden;
     background:linear-gradient(135deg,var(--coral),var(--gold));display:flex;align-items:center;
-    justify-content:center;font-weight:800;font-family:'Fraunces',serif;font-size:1.05rem}
+    justify-content:center;font-weight:800;font-family:'Fraunces',serif;font-size:2.2rem;
+    border:3px solid rgba(255,255,255,.85);box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+  .patrono .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  @media(max-width:700px){.patrono .avatar{width:84px;height:84px;font-size:1.7rem}}
   .patrono .pt-badge{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:800}
   .patrono h3{margin:.15rem 0;font-size:1.25rem;font-family:'Fraunces',serif}
   .patrono p{margin:0;opacity:.85;font-size:.9rem}
