@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>53ª Feira do Livro de Santa Maria — 7 a 22 de agosto de 2026</title>
+<meta name="description" content="Vitrine oficial da 53ª Feira do Livro de Santa Maria. Programação completa, lançamentos de livros, agenda pessoal e novidades." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --roxo:#5a3a80;
+    --roxo-2:#3d2557;
+    --roxo-3:#7a56a8;
+    --lilas:#efe8f8;
+    --coral:#ff6b4a;
+    --gold:#f6b64b;
+    --magenta:#e0489a;
+    --ink:#241633;
+    --paper:#fbf8f4;
+    --card:#ffffff;
+    --line:rgba(90,58,128,.14);
+    --shadow:0 18px 50px -20px rgba(61,37,87,.45);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--ink);
+    background:var(--paper);overflow-x:hidden;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;border:none;cursor:pointer;
+    font-weight:700;font-size:.95rem;padding:.85rem 1.4rem;border-radius:100px;
+    transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-p{background:var(--coral);color:#fff;box-shadow:0 12px 26px -10px var(--coral)}
+  .btn-p:hover{background:#ff5636}
+  .btn-g{background:#fff;color:var(--roxo);border:1.5px solid var(--line)}
+  .btn-g:hover{border-color:var(--roxo);box-shadow:var(--shadow)}
+  .chip{border:1.5px solid var(--line);background:#fff;color:var(--roxo-2);
+    padding:.5rem 1rem;border-radius:100px;font-weight:600;font-size:.85rem;
+    cursor:pointer;transition:all .18s ease;white-space:nowrap}
+  .chip:hover{border-color:var(--roxo-3)}
+  .chip.on{background:var(--roxo);color:#fff;border-color:var(--roxo)}
+
+  /* ===== Header ===== */
+  header.nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(10px);
+    background:rgba(251,248,244,.82);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{display:flex;align-items:center;gap:.7rem;font-weight:800}
+  .brand img{height:42px;width:auto}
+  .nav-links{display:flex;gap:1.6rem;font-weight:600;font-size:.95rem;color:var(--roxo-2)}
+  .nav-links a{position:relative}
+  .nav-links a:after{content:"";position:absolute;left:0;bottom:-6px;height:2px;width:0;
+    background:var(--coral);transition:width .2s ease}
+  .nav-links a:hover:after{width:100%}
+  .nav-cta{display:flex;align-items:center;gap:.8rem}
+  .agenda-btn{position:relative}
+  .agenda-count{position:absolute;top:-8px;right:-8px;background:var(--coral);color:#fff;
+    font-size:.7rem;font-weight:800;min-width:20px;height:20px;border-radius:100px;
+    display:flex;align-items:center;justify-content:center;padding:0 5px}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* ===== Hero — roxo vibrante da Feira, com brilhos quentes ===== */
+  .hero{position:relative;overflow:hidden;padding:76px 0 84px;color:#fff;
+    background:radial-gradient(135% 130% at 80% -12%,#8a4bc4 0%,#6a3aa0 28%,#4a2775 60%,#2c1846 100%)}
+  .hero .spark{position:absolute;border-radius:50%;filter:blur(44px);pointer-events:none}
+  .hero .s1{width:300px;height:300px;background:var(--magenta);top:-80px;left:42%;opacity:.55;animation:float1 16s ease-in-out infinite}
+  .hero .s2{width:240px;height:240px;background:var(--coral);bottom:-90px;right:28%;opacity:.5;animation:float2 20s ease-in-out infinite}
+  .hero .s3{width:200px;height:200px;background:var(--gold);top:44%;left:-40px;opacity:.35;animation:float1 24s ease-in-out infinite}
+  @keyframes float1{50%{transform:translate(-20px,24px) scale(1.08)}}
+  @keyframes float2{50%{transform:translate(24px,-20px) scale(1.05)}}
+  .hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:46px;align-items:center}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;text-align:center}}
+  .kicker{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.30);padding:.45rem 1rem;border-radius:100px;font-weight:700;
+    font-size:.8rem;letter-spacing:.03em;text-transform:uppercase;margin-bottom:18px;color:#fff}
+  .hero h1{font-size:clamp(2.4rem,5.4vw,4rem);line-height:1;font-weight:900;margin:.2rem 0 1rem;color:#fff}
+  .hero h1 em{font-style:italic;color:var(--gold)}
+  .hero p.lead{font-size:1.12rem;line-height:1.55;color:rgba(255,255,255,.9);max-width:33rem;margin:0 auto 1.4rem}
+  @media(min-width:901px){.hero p.lead{margin-left:0}}
+  .hero-meta{display:flex;gap:1.8rem;flex-wrap:wrap;margin:1.2rem 0 1.8rem;justify-content:center}
+  @media(min-width:901px){.hero-meta{justify-content:flex-start}}
+  .hero-meta b{display:block;font-family:'Fraunces',serif;font-size:1.6rem;color:var(--gold);line-height:1;font-weight:900}
+  .hero-meta small{color:rgba(255,255,255,.78);font-weight:600;font-size:.86rem}
+  .hero-actions{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center}
+  @media(min-width:901px){.hero-actions{justify-content:flex-start}}
+  .hero-poster{position:relative;justify-self:center;max-width:460px;width:100%}
+  .hero-poster img{width:100%;border-radius:16px;box-shadow:var(--shadow);
+    transform:rotate(-1.6deg);border:7px solid #fff;display:block}
+  .hero-poster .cap{position:absolute;bottom:-12px;right:8px;background:var(--roxo);color:#fff;
+    font-size:.72rem;font-weight:700;padding:.4rem .85rem;border-radius:100px;transform:rotate(-1.6deg)}
+
+  /* ===== Galeria da Feira ===== */
+  .gal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media(max-width:900px){.gal-grid{grid-template-columns:repeat(2,1fr)}}
+  .gitem{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
+    cursor:zoom-in;background:#fff;aspect-ratio:3/4;transition:transform .2s ease,box-shadow .2s ease}
+  .gitem:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+  .gitem img{width:100%;height:100%;object-fit:cover;display:block}
+  .gitem.logo{padding:26px}
+  .gitem.logo img{object-fit:contain}
+  .gitem.lightbg{background:linear-gradient(135deg,#f7f1ff,#efe8f8)}
+  .gitem.darkbg{background:linear-gradient(135deg,#5a3a80,#3d2557)}
+  .gitem .gcap{position:absolute;left:0;right:0;bottom:0;color:#fff;font-size:.8rem;font-weight:600;
+    padding:24px 12px 11px;background:linear-gradient(180deg,transparent,rgba(20,10,25,.72))}
+  .lightbox{position:fixed;inset:0;background:rgba(20,10,25,.92);z-index:200;display:none;
+    align-items:center;justify-content:center;padding:28px;cursor:zoom-out}
+  .lightbox.on{display:flex}
+  .lightbox img{max-width:92%;max-height:92%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+  .lightbox .lb-close{position:absolute;top:18px;right:22px;color:#fff;font-size:1.6rem;font-weight:700}
+
+  /* ===== Galeria de fotos ===== */
+  .fotos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:900px){.fotos-grid{grid-template-columns:repeat(2,1fr)}}
+  .foto-card{margin:0;position:relative;border-radius:14px;overflow:hidden;cursor:zoom-in;
+    aspect-ratio:1;border:1px solid var(--line);background:#fff}
+  .foto-card img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+  .foto-card:hover img{transform:scale(1.06)}
+  .foto-card figcaption{position:absolute;left:0;right:0;bottom:0;color:#fff;font-size:.78rem;
+    padding:20px 10px 9px;background:linear-gradient(180deg,transparent,rgba(20,10,25,.72))}
+
+  /* ===== Galeria de vídeos ===== */
+  .videos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:820px){.videos-grid{grid-template-columns:1fr}}
+  .video-card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    transition:transform .2s ease,box-shadow .2s ease;color:inherit}
+  .video-card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+  .video-thumb{aspect-ratio:16/9;background:#3d2557 center/cover no-repeat;display:flex;
+    align-items:center;justify-content:center;position:relative}
+  .video-thumb:after{content:"";position:absolute;inset:0;background:rgba(45,24,70,.25)}
+  .video-thumb .play{position:relative;z-index:2;width:54px;height:54px;border-radius:50%;
+    background:rgba(255,107,74,.95);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:1.2rem;padding-left:4px;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+  .video-info{padding:14px 16px 18px}
+  .video-info .vplat{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--coral)}
+  .video-info h4{margin:.25rem 0;font-size:1.05rem;color:var(--ink)}
+  .video-info p{margin:0;font-size:.86rem;color:#6b6280;line-height:1.45}
+
+  /* patrono strip */
+  .patrono{background:var(--roxo-2);color:#fff}
+  .patrono .wrap{display:flex;align-items:center;gap:18px;padding:20px 22px;flex-wrap:wrap}
+  .patrono .avatar{width:52px;height:52px;border-radius:50%;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--coral),var(--gold));display:flex;align-items:center;
+    justify-content:center;font-weight:800;font-family:'Fraunces',serif;font-size:1.05rem}
+  .patrono .pt-badge{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:800}
+  .patrono h3{margin:.15rem 0;font-size:1.25rem;font-family:'Fraunces',serif}
+  .patrono p{margin:0;opacity:.85;font-size:.9rem}
+  .patrono .pt-cta{margin-left:auto}
+  @media(max-width:700px){.patrono .pt-cta{margin-left:0}}
+
+  /* marquee */
+  .marquee{background:var(--roxo-2);color:#fff;overflow:hidden;white-space:nowrap;padding:12px 0;
+    border-top:1px solid rgba(255,255,255,.1)}
+  .marquee-track{display:inline-block;animation:scrollx 32s linear infinite}
+  .marquee span{font-family:'Fraunces',serif;font-style:italic;font-size:1.05rem;margin:0 1.6rem;opacity:.9}
+  .marquee span:before{content:"✦";color:var(--gold);margin-right:1.6rem;font-style:normal}
+  @keyframes scrollx{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ===== Section shell ===== */
+  section{padding:76px 0}
+  .sec-head{max-width:44rem;margin-bottom:36px}
+  .sec-head .eye{color:var(--coral);font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.82rem}
+  .sec-head h2{font-size:clamp(2rem,4vw,2.9rem);line-height:1.05;margin:.4rem 0 .6rem;color:var(--roxo-2)}
+  .sec-head p{color:#5b5168;font-size:1.05rem;line-height:1.55;margin:0}
+
+  /* stats */
+  .stats{background:var(--lilas)}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  @media(max-width:760px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:#fff;border-radius:20px;padding:26px;text-align:center;border:1px solid var(--line)}
+  .stat .n{font-family:'Fraunces',serif;font-weight:900;font-size:2.6rem;color:var(--roxo);line-height:1}
+  .stat .l{color:#6b6280;font-weight:600;margin-top:.4rem;font-size:.95rem}
+
+  /* vitrine cards */
+  .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  @media(max-width:900px){.vgrid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:600px){.vgrid{grid-template-columns:1fr}}
+  .vcard{position:relative;border-radius:22px;overflow:hidden;min-height:280px;color:#fff;
+    display:flex;flex-direction:column;justify-content:flex-end;padding:24px;
+    box-shadow:var(--shadow);transition:transform .25s ease}
+  .vcard:hover{transform:translateY(-6px)}
+  .vcard .tag{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.35);
+    padding:.35rem .8rem;border-radius:100px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .vcard h3{font-size:1.35rem;margin:.3rem 0 .3rem;position:relative}
+  .vcard p{font-size:.9rem;opacity:.92;margin:0;position:relative}
+  .vcard:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,10,35,.05),rgba(20,10,35,.78))}
+  .vcard>*{position:relative;z-index:2}
+
+  /* toolbar */
+  .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:26px}
+  .search{flex:1;min-width:240px;display:flex;align-items:center;gap:.6rem;background:#fff;
+    border:1.5px solid var(--line);border-radius:100px;padding:.7rem 1.1rem}
+  .search input{border:none;outline:none;flex:1;font-size:1rem;background:transparent;font-family:inherit}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* schedule */
+  .days{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:22px;scrollbar-width:thin}
+  .day-pill{flex:0 0 auto;border:1.5px solid var(--line);background:#fff;border-radius:16px;
+    padding:.6rem .9rem;text-align:center;cursor:pointer;min-width:74px;transition:all .18s ease}
+  .day-pill:hover{border-color:var(--roxo-3)}
+  .day-pill.on{background:var(--roxo);color:#fff;border-color:var(--roxo)}
+  .day-pill .d{font-family:'Fraunces',serif;font-weight:900;font-size:1.4rem;line-height:1}
+  .day-pill .w{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;opacity:.8}
+  .ev-list{display:grid;gap:14px}
+  .ev{display:grid;grid-template-columns:88px 1fr auto;gap:18px;align-items:center;
+    background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 20px;
+    transition:box-shadow .2s ease,transform .2s ease}
+  .ev:hover{box-shadow:var(--shadow);transform:translateX(4px)}
+  .ev .time{font-family:'Fraunces',serif;font-weight:900;font-size:1.15rem;color:var(--roxo)}
+  .ev .time small{display:block;font-family:'Inter';font-weight:600;font-size:.72rem;color:#8a8299;text-transform:uppercase}
+  .ev .body h4{margin:0 0 .3rem;font-size:1.08rem;color:var(--ink)}
+  .ev .meta{display:flex;gap:.8rem;flex-wrap:wrap;font-size:.83rem;color:#6b6280}
+  .ev .meta span{display:inline-flex;align-items:center;gap:.3rem}
+  .cat-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .fav{border:none;background:var(--lilas);color:var(--roxo);width:44px;height:44px;border-radius:50%;
+    cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .18s ease}
+  .fav:hover{background:#e7dcf6}
+  .fav.on{background:var(--coral);color:#fff}
+  @media(max-width:640px){.ev{grid-template-columns:64px 1fr;grid-template-areas:"t b" "f f"}
+    .ev .time{grid-area:t}.ev .body{grid-area:b}.ev .fav{grid-area:f;justify-self:start}}
+  .empty{text-align:center;padding:50px;color:#8a8299;background:#fff;border-radius:18px;border:1px dashed var(--line)}
+
+  /* books */
+  .bgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  @media(max-width:980px){.bgrid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:720px){.bgrid{grid-template-columns:repeat(2,1fr)}}
+  .book{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    display:flex;flex-direction:column;transition:transform .22s ease,box-shadow .22s ease}
+  .book:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+  .cover{aspect-ratio:3/4;position:relative;display:flex;align-items:center;justify-content:center;
+    padding:18px;text-align:center;overflow:hidden}
+  .cover .ct{font-family:'Fraunces',serif;font-weight:900;color:#fff;font-size:1.15rem;line-height:1.15;z-index:2;
+    text-shadow:0 2px 12px rgba(0,0,0,.25)}
+  .cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:3}
+  .cover .up{position:absolute;bottom:10px;right:10px;z-index:4;background:rgba(255,255,255,.92);
+    color:var(--roxo);border:none;border-radius:100px;padding:.35rem .7rem;font-size:.72rem;font-weight:700;
+    cursor:pointer;display:flex;align-items:center;gap:.3rem;opacity:0;transition:opacity .2s ease}
+  .book:hover .up{opacity:1}
+  .book .info{padding:16px 16px 18px;display:flex;flex-direction:column;gap:.35rem;flex:1}
+  .book .bcat{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--coral)}
+  .book .info h4{margin:.1rem 0;font-size:1.02rem;line-height:1.2;color:var(--ink)}
+  .book .aut{font-size:.86rem;color:#6b6280}
+  .book .bfoot{margin-top:auto;padding-top:.7rem;display:flex;align-items:center;justify-content:space-between}
+  .pill-lanc{font-size:.72rem;font-weight:700;color:var(--roxo);background:var(--lilas);padding:.25rem .6rem;border-radius:100px}
+  .bfav{border:none;background:none;cursor:pointer;font-size:1.15rem;color:#c9c2d6;transition:color .18s,transform .18s}
+  .bfav:hover{transform:scale(1.15)}
+  .bfav.on{color:var(--coral)}
+
+  /* citizen band */
+  .citizen{background:linear-gradient(135deg,var(--roxo) 0%,var(--roxo-2) 100%);color:#fff;border-radius:28px;
+    padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;box-shadow:var(--shadow)}
+  @media(max-width:820px){.citizen{grid-template-columns:1fr;padding:32px}}
+  .citizen h2{font-size:2.1rem;margin:.2rem 0 .6rem}
+  .citizen p{color:rgba(255,255,255,.88);line-height:1.55}
+  .news-form{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:24px}
+  .news-form label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.85}
+  .news-form input{width:100%;margin:.5rem 0 1rem;padding:.85rem 1rem;border-radius:12px;border:none;
+    font-size:1rem;font-family:inherit}
+  .news-ok{background:rgba(255,255,255,.16);border-radius:12px;padding:1rem;text-align:center;font-weight:600;display:none}
+
+  /* agenda drawer */
+  .drawer{position:fixed;top:0;right:0;height:100%;width:390px;max-width:92vw;background:var(--paper);
+    box-shadow:-20px 0 60px -20px rgba(61,37,87,.5);z-index:120;transform:translateX(100%);
+    transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer-head{padding:22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .drawer-head h3{margin:0;color:var(--roxo-2);font-size:1.3rem}
+  .drawer-body{overflow-y:auto;padding:18px 22px;flex:1}
+  .drawer-body .empty{padding:40px 10px}
+  .aitem{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  .aitem .at{font-size:.75rem;color:var(--coral);font-weight:800;text-transform:uppercase}
+  .aitem h5{margin:.25rem 0;font-size:.98rem}
+  .aitem .rm{border:none;background:none;color:#a99fbc;cursor:pointer;font-size:.8rem;font-weight:600;padding:0}
+  .aitem .rm:hover{color:var(--coral)}
+  .overlay{position:fixed;inset:0;background:rgba(36,22,51,.4);z-index:110;opacity:0;pointer-events:none;transition:opacity .3s}
+  .overlay.on{opacity:1;pointer-events:auto}
+  .close-x{border:none;background:var(--lilas);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;color:var(--roxo)}
+
+  /* footer */
+  footer{background:var(--roxo-2);color:rgba(255,255,255,.82);padding:60px 0 30px}
+  footer h4{color:#fff;font-family:'Fraunces',serif;font-size:1.2rem;margin:0 0 .8rem}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:34px;margin-bottom:36px}
+  @media(max-width:760px){.foot-grid{grid-template-columns:1fr}}
+  .foot-grid p,.foot-grid a{font-size:.92rem;line-height:1.7;display:block}
+  .foot-grid a:hover{color:#fff}
+  .realiz{font-size:.82rem;line-height:1.7;opacity:.7;border-top:1px solid rgba(255,255,255,.15);padding-top:24px}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(120%);
+    background:var(--roxo-2);color:#fff;padding:.9rem 1.4rem;border-radius:100px;font-weight:600;
+    z-index:200;transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:var(--shadow)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#topo">
+      <img src="assets/marca-roxo.png" alt="53ª Feira do Livro de Santa Maria" />
+    </a>
+    <nav class="nav-links">
+      <a href="#vitrine">Vitrine</a>
+      <a href="#galeria">Galeria</a>
+      <a href="#programacao">Programação</a>
+      <a href="#livros">Lançamentos</a>
+      <a href="#cidadao">Participe</a>
+    </nav>
+    <div class="nav-cta">
+      <button class="btn btn-g agenda-btn" onclick="openDrawer()">
+        ★ Minha Agenda
+        <span class="agenda-count" id="navCount" style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="topo">
+  <div class="spark s1"></div><div class="spark s2"></div><div class="spark s3"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">✦ 7 a 22 de agosto · 2026 · Praça Saldanha Marinho</span>
+      <h1>A cidade que <em>lê</em> em voz alta.</h1>
+      <p class="lead">A 53ª Feira do Livro de Santa Maria toma a praça com espetáculos, lançamentos, música e encontros literários — celebrando os 120 anos de Mário Quintana. Monte a sua agenda e viva 16 dias de leitura.</p>
+      <div class="hero-meta">
+        <div><b>258</b><small>lançamentos</small></div>
+        <div><b>16</b><small>dias de festa</small></div>
+        <div><b>1000+</b><small>autores</small></div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-p" href="#programacao">Ver programação →</a>
+        <a class="btn btn-g" href="#galeria">Ver a galeria</a>
+      </div>
+    </div>
+    <div class="hero-poster reveal">
+      <img src="assets/cartaz.png" onclick="openLightbox('assets/cartaz.png')"
+           alt="Cartaz oficial da 53ª Feira do Livro de Santa Maria. Ilustração: Betina Menine Toniazzo." />
+      <span class="cap">Cartaz oficial 2026</span>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track" id="marquee"></div>
+</div>
+
+<!-- ===== PATRONO ===== -->
+<div class="patrono">
+  <div class="wrap">
+    <div class="avatar">DT</div>
+    <div>
+      <div class="pt-badge">Patrono da 53ª edição</div>
+      <h3>Daniel Tonetto</h3>
+      <p>Lançamento de “A Cor Que Nos Separa: A Origem” · 11/08 · Noite do Patrono em 13/08, no Theatro Treze de Maio.</p>
+    </div>
+    <a class="btn btn-p pt-cta" href="#programacao">Ver na programação →</a>
+  </div>
+</div>
+
+<!-- ===== STATS ===== -->
+<section class="stats" style="padding:56px 0">
+  <div class="wrap">
+    <div class="stat-grid">
+      <div class="stat reveal"><div class="n" data-count="258">0</div><div class="l">Lançamentos de livros</div></div>
+      <div class="stat reveal"><div class="n" data-count="40">0</div><div class="l">Coletâneas</div></div>
+      <div class="stat reveal"><div class="n" data-count="24">0</div><div class="l">Municípios gaúchos</div></div>
+      <div class="stat reveal"><div class="n" data-count="4">0</div><div class="l">Estados representados</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VITRINE DESTAQUES ===== -->
+<section id="vitrine">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eye">Vitrine</span>
+      <h2>Destaques da praça</h2>
+      <p>Uma seleção do que ninguém quer perder — espetáculos, concertos e encontros que dão o tom da 53ª edição.</p>
+    </div>
+    <div class="vgrid" id="vitrineGrid"></div>
+  </div>
+</section>
+
+<!-- ===== GALERIA ===== -->
+<section id="galeria">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eye">Identidade visual</span>
+      <h2>A galeria da Feira</h2>
+      <p>O material oficial da 53ª edição — cartaz, marcador de páginas e as versões da marca. Clique para ampliar. Ilustração de Betina Menine Toniazzo.</p>
+    </div>
+    <div class="gal-grid reveal">
+      <div class="gitem" onclick="openLightbox('assets/cartaz.png')">
+        <img src="assets/cartaz.png" alt="Cartaz oficial" />
+        <span class="gcap">Cartaz oficial</span>
+      </div>
+      <div class="gitem" onclick="openLightbox('assets/marcador.png')">
+        <img src="assets/marcador.png" alt="Marcador de páginas" />
+        <span class="gcap">Marcador de páginas</span>
+      </div>
+      <div class="gitem logo lightbg" onclick="openLightbox('assets/marca-roxo.png')">
+        <img src="assets/marca-roxo.png" alt="Marca — versão roxa" />
+        <span class="gcap">Marca · versão roxa</span>
+      </div>
+      <div class="gitem logo darkbg" onclick="openLightbox('assets/marca-branca.png')">
+        <img src="assets/marca-branca.png" alt="Marca — versão branca" />
+        <span class="gcap">Marca · versão branca</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROGRAMAÇÃO ===== -->
+<section id="programacao" style="background:var(--lilas)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eye">Programação completa</span>
+      <h2>Toda a agenda, dia a dia</h2>
+      <p>Busque por título, autor ou grupo, filtre por categoria e escolha o dia. Toque na estrela para salvar na sua agenda pessoal.</p>
+    </div>
+
+    <div class="toolbar reveal">
+      <div class="search">
+        <span>🔍</span>
+        <input id="q" type="text" placeholder="Buscar espetáculo, autor, grupo…" oninput="renderSchedule()" />
+      </div>
+      <div class="filters" id="catFilters"></div>
+    </div>
+
+    <div class="days" id="dayPills"></div>
+    <div class="ev-list" id="evList"></div>
+  </div>
+</section>
+
+<!-- ===== LANÇAMENTOS DE LIVROS ===== -->
+<section id="livros">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eye">Lançamentos de livros</span>
+      <h2>A vitrine dos autores</h2>
+      <p>Cada livro ganha um card com capa, autor e categoria. No modelo final, autores e organizadores enviam a capa e os dados direto pelo painel — aqui você já pode testar o envio de uma imagem.</p>
+    </div>
+
+    <div class="toolbar reveal">
+      <div class="search">
+        <span>🔍</span>
+        <input id="bq" type="text" placeholder="Buscar livro ou autor…" oninput="renderBooks()" />
+      </div>
+      <div class="filters" id="bookFilters"></div>
+    </div>
+
+    <div class="bgrid" id="bookGrid"></div>
+  </div>
+</section>
+
+<!-- ===== GALERIA DE FOTOS ===== -->
+<section id="fotos" style="display:none;background:var(--lilas)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eye">Momentos</span>
+      <h2>Galeria de fotos</h2>
+      <p>Registros da Feira. Clique para ampliar.</p>
+    </div>
+    <div class="fotos-grid reveal" id="fotosGrid"></div>
+  </div>
+</section>
+<div id="fotosSec" style="display:none"></div>
+
+<!-- ===== GALERIA DE VÍDEOS ===== -->
+<section id="videos" style="display:none">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eye">Assista</span>
+      <h2>Vídeos da Feira</h2>
+      <p>Coberturas, entrevistas e destaques publicados pela organização.</p>
+    </div>
+    <div class="videos-grid reveal" id="videosGrid"></div>
+  </div>
+</section>
+<div id="videosSec" style="display:none"></div>
+
+<!-- ===== CIDADÃO ===== -->
+<section id="cidadao">
+  <div class="wrap">
+    <div class="citizen reveal">
+      <div>
+        <span class="eye" style="color:var(--gold)">Participe</span>
+        <h2>A Feira é da cidade</h2>
+        <p>Salve seus eventos favoritos e monte a <b>Minha Agenda</b>, receba a programação por e-mail e acompanhe as novidades da Maratona de Leitura — <em>“Santa Maria vai parar… para ler!”</em></p>
+        <div style="margin-top:1.2rem;display:flex;gap:.8rem;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="openDrawer()">★ Ver minha agenda</button>
+          <a class="btn btn-g" href="#programacao" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Escolher eventos</a>
+        </div>
+      </div>
+      <form class="news-form" onsubmit="return subscribe(event)">
+        <label>Receba a programação</label>
+        <input id="nsName" type="text" placeholder="Seu nome" required />
+        <input id="nsMail" type="email" placeholder="seu@email.com" required />
+        <button class="btn btn-p" type="submit" style="width:100%;justify-content:center">Quero receber ✉</button>
+        <div class="news-ok" id="newsOk">✓ Pronto! Você receberá as novidades da Feira.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>53ª Feira do Livro de Santa Maria</h4>
+        <p>7 a 22 de agosto de 2026 · Praça Saldanha Marinho<br>Domingo a sexta, das 13h30 às 19h30 · Sábados, das 10h às 19h30</p>
+        <p style="opacity:.7">Realização da Prefeitura de Santa Maria, por meio das Secretarias de Cultura e de Educação, com a Câmara do Livro e instituições parceiras.</p>
+      </div>
+      <div>
+        <h4>Navegue</h4>
+        <a href="#vitrine">Vitrine</a>
+        <a href="#programacao">Programação</a>
+        <a href="#livros">Lançamentos</a>
+        <a href="#cidadao">Participe</a>
+      </div>
+      <div>
+        <h4>Acompanhe</h4>
+        <a href="https://www.instagram.com/feiradolivrosm" target="_blank" rel="noopener">@feiradolivrosm</a>
+        <a href="https://www.instagram.com/cultura.santamaria" target="_blank" rel="noopener">@cultura.santamaria</a>
+        <a href="https://www.santamaria.rs.gov.br/cultura" target="_blank" rel="noopener">santamaria.rs.gov.br/cultura</a>
+        <a href="https://www.facebook.com/feiradolivrosm" target="_blank" rel="noopener">Facebook da Feira</a>
+      </div>
+    </div>
+    <div class="realiz">
+      Financiamento: Lei de Incentivo à Cultura (LIC) de Santa Maria e Sistema Pró-Cultura RS · Produção cultural: Plano Comunicação e Eventos e Denise Copetti Produções · Incentivo: Unimed Santa Maria e Clínica Viver. — Protótipo de divulgação, dados baseados na programação oficial da 53ª edição.
+    </div>
+  </div>
+</footer>
+
+<!-- ===== AGENDA DRAWER ===== -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>★ Minha Agenda</h3>
+    <button class="close-x" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lb-close">✕</span>
+  <img id="lbImg" src="" alt="Imagem ampliada" />
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script>
+/* ============ DADOS ============ */
+const CAT = {
+  'Infantil':  '#e0489a',
+  'Livro Livre':'#5a3a80',
+  'Música':    '#f6b64b',
+  'Espetáculo':'#7a56a8',
+  'Cinema':    '#2f9e8f',
+  'Praça':     '#ff6b4a',
+  'Lançamento':'#3d76c4',
+  'Especial':  '#c0392b'
+};
+
+const DAYS = [
+  {d:'07',w:'Sex'},{d:'08',w:'Sáb'},{d:'09',w:'Dom'},{d:'10',w:'Seg'},
+  {d:'11',w:'Ter'},{d:'12',w:'Qua'},{d:'13',w:'Qui'},{d:'14',w:'Sex'},
+  {d:'15',w:'Sáb'},{d:'16',w:'Dom'},{d:'17',w:'Seg'},{d:'18',w:'Ter'},
+  {d:'19',w:'Qua'},{d:'20',w:'Qui'},{d:'21',w:'Sex'},{d:'22',w:'Sáb'}
+];
+
+let EVENTS = [
+  {id:1,dia:'07',hora:'14h30',cat:'Infantil',titulo:'Kiriku, a Lenda do Menino Guerreiro',grupo:'Lendas Africanas nas Escolas',local:'Theatro Treze de Maio',libras:true},
+  {id:2,dia:'07',hora:'19h',cat:'Especial',titulo:'Abertura Oficial',grupo:'53ª Feira do Livro',local:'Theatro Treze de Maio'},
+  {id:3,dia:'08',hora:'9h30',cat:'Especial',titulo:'2ª Maratona de Leitura da Feira do Livro',grupo:'com Ana Sofia Marçal (Sertã, Portugal)',local:'Praça Saldanha Marinho'},
+  {id:4,dia:'08',hora:'15h',cat:'Infantil',titulo:'Sótão da Flor no Mundo da Leitura',grupo:'Ueba Produtos Notáveis',local:'Theatro Treze de Maio'},
+  {id:5,dia:'08',hora:'19h',cat:'Livro Livre',titulo:'Painel sobre As Mulheres da Casa',grupo:'Letícia Wierzchowski e Werner Schünemann',local:'Auditório Colégio Marista'},
+  {id:6,dia:'09',hora:'15h',cat:'Infantil',titulo:'O Incrível Caso do Sumiço das Letras',grupo:'Ueba Produtos Notáveis',local:'Theatro Treze de Maio'},
+  {id:7,dia:'09',hora:'19h',cat:'Música',titulo:'Especial Elton John',grupo:'Adriano Zuli — 100% ao vivo',local:'Theatro Treze de Maio'},
+  {id:8,dia:'10',hora:'9h',cat:'Especial',titulo:'Maratona de Leitura — Todo Mundo Pode Ler!',grupo:'Santa Maria vai parar… para ler!',local:'Toda a cidade'},
+  {id:9,dia:'10',hora:'14h30',cat:'Infantil',titulo:'Desorquestralha',grupo:'Teatro Por Que Não?',local:'Theatro Treze de Maio',libras:true},
+  {id:10,dia:'10',hora:'16h30',cat:'Livro Livre',titulo:'Papo Show Iara & Léo',grupo:'Iara Cadore e Léo Sperb',local:'Auditório Colégio Marista'},
+  {id:11,dia:'10',hora:'19h',cat:'Livro Livre',titulo:'Vida e Obra de Mário Quintana',grupo:'Gérson Werlang e Orlando Fonseca',local:'Theatro Treze de Maio'},
+  {id:12,dia:'11',hora:'9h',cat:'Lançamento',titulo:'A Cor Que Nos Separa: A Origem',grupo:'Daniel Tonetto — Patrono da 53ª Feira',local:'Praça Saldanha Marinho'},
+  {id:13,dia:'11',hora:'14h30',cat:'Infantil',titulo:'E Agora?',grupo:'Cia de Teatro Tantã',local:'Theatro Treze de Maio'},
+  {id:14,dia:'11',hora:'19h',cat:'Livro Livre',titulo:'Inclusão Amorosa',grupo:'Isabel Ferrari',local:'Auditório Colégio Marista'},
+  {id:15,dia:'12',hora:'14h30',cat:'Infantil',titulo:'Descobrindo os Sons do Mundo com Suzinho',grupo:'Núcleo Repercussão',local:'Theatro Treze de Maio',libras:true},
+  {id:16,dia:'12',hora:'19h',cat:'Música',titulo:'Quintanares — A Poesia que Mora em Nós',grupo:'Cia Armazém Cultura',local:'Theatro Treze de Maio'},
+  {id:17,dia:'13',hora:'14h30',cat:'Infantil',titulo:'Kidscoteca — Musical Infantil',grupo:'Kidscoteca',local:'Theatro Treze de Maio'},
+  {id:18,dia:'13',hora:'19h',cat:'Especial',titulo:'Noite do Patrono',grupo:'Homenagem a Daniel Tonetto',local:'Theatro Treze de Maio'},
+  {id:19,dia:'14',hora:'14h30',cat:'Infantil',titulo:'Quando Humildes Bardos',grupo:'Coletivo Elytra',local:'Theatro Treze de Maio'},
+  {id:20,dia:'14',hora:'19h',cat:'Cinema',titulo:'Filme — A Intrusa',grupo:'Direção de Helquer Paez',local:'Theatro Treze de Maio'},
+  {id:21,dia:'15',hora:'15h',cat:'Infantil',titulo:'Em Busca da Amazônia',grupo:'Contra-Regras',local:'Theatro Treze de Maio'},
+  {id:22,dia:'15',hora:'18h',cat:'Música',titulo:'Tornar o Amor uma Casa',grupo:'Gérson Werlang — musical',local:'Theatro Treze de Maio'},
+  {id:23,dia:'15',hora:'19h',cat:'Livro Livre',titulo:'Bate-papo com Juarez Fonseca',grupo:'mediação de Gérson Werlang',local:'Theatro Treze de Maio'},
+  {id:24,dia:'16',hora:'16h',cat:'Praça',titulo:'Passageiros da Alegria',grupo:'Intervenções de palhaços',local:'Praça Saldanha Marinho'},
+  {id:25,dia:'16',hora:'19h',cat:'Espetáculo',titulo:'Sobre Anjos e Grilos — O Universo de Mário Quintana',grupo:'Deborah Finocchiaro',local:'Theatro Treze de Maio'},
+  {id:26,dia:'17',hora:'Dia',cat:'Especial',titulo:'Um Dia no Museu',grupo:'Museus e memoriais de Santa Maria (UFSM)',local:'Espaços museológicos'},
+  {id:27,dia:'17',hora:'14h30',cat:'Infantil',titulo:'Jardim de Cataventos',grupo:'Espetáculo poético-musical',local:'Theatro Treze de Maio'},
+  {id:28,dia:'17',hora:'19h',cat:'Cinema',titulo:'Documentário Morada',grupo:'TV OVO — Direção Neli Mombelli',local:'Theatro Treze de Maio'},
+  {id:29,dia:'18',hora:'14h30',cat:'Infantil',titulo:'As Aventuras de Canjica',grupo:'Milho Verde',local:'Theatro Treze de Maio'},
+  {id:30,dia:'18',hora:'19h',cat:'Livro Livre',titulo:'Bate-papo com Eliane Marques',grupo:'sobre o livro Louças de Família',local:'Theatro Treze de Maio'},
+  {id:31,dia:'19',hora:'14h30',cat:'Praça',titulo:'Borogodó',grupo:'TGT Produções — palhaçaria',local:'Praça Saldanha Marinho'},
+  {id:32,dia:'19',hora:'15h',cat:'Livro Livre',titulo:'Papo Show — Ação CUFA na Feira',grupo:'Chiquinho Divilas',local:'Auditório Colégio Marista'},
+  {id:33,dia:'19',hora:'19h',cat:'Música',titulo:'Chiquinha Gonzaga: Música, Liberdade e Pioneirismo',grupo:'Orquestra de Câmara de Santa Maria',local:'Theatro Treze de Maio'},
+  {id:34,dia:'20',hora:'14h30',cat:'Infantil',titulo:'O Sol e a Semente Sagrada',grupo:'Teatro no Buraco',local:'Theatro Treze de Maio',libras:true},
+  {id:35,dia:'20',hora:'19h',cat:'Música',titulo:'Os Grandes Clássicos do Cinema',grupo:'Orquestra Sinfônica de Santa Maria',local:'Theatro Treze de Maio'},
+  {id:36,dia:'21',hora:'14h30',cat:'Infantil',titulo:'Reciclamundo',grupo:'Armazém Cultura',local:'Theatro Treze de Maio'},
+  {id:37,dia:'21',hora:'15h',cat:'Espetáculo',titulo:'Adolescer',grupo:'Vanja Ca Michel — espetáculo juvenil',local:'Auditório Colégio Marista'},
+  {id:38,dia:'21',hora:'19h',cat:'Livro Livre',titulo:'Bate-papo com Ingra Lyberato',grupo:'Editora UFSM',local:'Theatro Treze de Maio'},
+  {id:39,dia:'22',hora:'10h',cat:'Lançamento',titulo:'Lançamento infantil — Bruxismo',grupo:'Livro infantil',local:'Praça Saldanha Marinho'},
+  {id:40,dia:'22',hora:'14h30',cat:'Infantil',titulo:'Lili Inventa o Mundo',grupo:'inspirado em Mário Quintana',local:'Theatro Treze de Maio'}
+];
+
+let BOOKS = [
+  {id:'b1',titulo:'A Cor Que Nos Separa: A Origem',autor:'Daniel Tonetto',cat:'Romance',patrono:true,c1:'#5a3a80',c2:'#e0489a'},
+  {id:'b2',titulo:'Louças de Família',autor:'Eliane Marques',cat:'Poesia',c1:'#c0392b',c2:'#f6b64b'},
+  {id:'b3',titulo:'Aquarela Brasileira',autor:'Juarez Fonseca',cat:'Não-ficção',c1:'#2f9e8f',c2:'#5a3a80'},
+  {id:'b4',titulo:'A Casa das Sete Mulheres',autor:'Letícia Wierzchowski',cat:'Romance',c1:'#7a56a8',c2:'#ff6b4a'},
+  {id:'b5',titulo:'ELEMENTOS',autor:'Chiquinho Divilas',cat:'Poesia',c1:'#241633',c2:'#e0489a'},
+  {id:'b6',titulo:'Contos Divilas',autor:'Chiquinho Divilas',cat:'Contos',c1:'#3d76c4',c2:'#2f9e8f'},
+  {id:'b7',titulo:'Lili Inventa o Mundo',autor:'Mário Quintana',cat:'Infantil',c1:'#f6b64b',c2:'#ff6b4a'},
+  {id:'b8',titulo:'Bruxismo',autor:'Autor(a) convidado(a)',cat:'Infantil',c1:'#2f9e8f',c2:'#f6b64b'},
+  {id:'b9',titulo:'Gilberto Gil — O Tempo é o Nada que é Tudo',autor:'Juarez Fonseca',cat:'Biografia',c1:'#5a3a80',c2:'#3d76c4'},
+  {id:'b10',titulo:'Cultura Hip-Hop nas Escolas',autor:'Chiquinho Divilas',cat:'Educação',c1:'#c0392b',c2:'#7a56a8'},
+  {id:'b11',titulo:'Ora Bolas — O Humor de Mário Quintana',autor:'Juarez Fonseca',cat:'Biografia',c1:'#e0489a',c2:'#5a3a80'},
+  {id:'b12',titulo:'Sobre Anjos & Grilos',autor:'Deborah Finocchiaro (org.)',cat:'Poesia',c1:'#7a56a8',c2:'#e0489a'}
+];
+
+/* ============ ESTADO ============ */
+let store = {favEv:[], favBk:[]};
+try{const s=JSON.parse(localStorage.getItem('flsm53'));if(s){store=s;}}catch(e){}
+function save(){try{localStorage.setItem('flsm53',JSON.stringify(store));}catch(e){}}
+
+let activeDay = 'all';
+let activeCat = 'all';
+
+/* ============ RENDER: marquee ============ */
+document.getElementById('marquee').innerHTML =
+  (function(){const a=['Letícia Wierzchowski','Daniel Tonetto','Eliane Marques','Juarez Fonseca','Chiquinho Divilas','Ingra Lyberato','Mário Quintana · 120 anos','Deborah Finocchiaro','Orquestra Sinfônica de Santa Maria','Maratona de Leitura'];
+  const one=a.map(x=>`<span>${x}</span>`).join('');return one+one;})();
+
+/* ============ RENDER: vitrine ============ */
+const VITRINE = [
+  {t:'Abertura Oficial',s:'07/08 · Theatro Treze de Maio',c:'linear-gradient(135deg,#5a3a80,#3d2557)',tag:'Especial'},
+  {t:'Especial Elton John',s:'09/08 · Show 100% ao vivo com Adriano Zuli',c:'linear-gradient(135deg,#e0489a,#5a3a80)',tag:'Música'},
+  {t:'As Mulheres da Casa',s:'08/08 · Letícia Wierzchowski e Werner Schünemann',c:'linear-gradient(135deg,#7a56a8,#e0489a)',tag:'Livro Livre'},
+  {t:'Os Grandes Clássicos do Cinema',s:'20/08 · Orquestra Sinfônica de Santa Maria',c:'linear-gradient(135deg,#3d76c4,#241633)',tag:'Música'},
+  {t:'Espaço Imersivo Mário Quintana',s:'16 dias · o quarto do poeta recriado na Feira',c:'linear-gradient(135deg,#f6b64b,#ff6b4a)',tag:'Imersivo'},
+  {t:'Maratona de Leitura',s:'10/08 · Santa Maria vai parar… para ler!',c:'linear-gradient(135deg,#2f9e8f,#5a3a80)',tag:'Cidade'}
+];
+document.getElementById('vitrineGrid').innerHTML = VITRINE.map(v=>`
+  <article class="vcard" style="background:${v.c}">
+    <span class="tag">${v.tag}</span>
+    <h3>${v.t}</h3>
+    <p>${v.s}</p>
+  </article>`).join('');
+
+/* ============ RENDER: filtros de categoria ============ */
+const cats = ['all',...Object.keys(CAT)];
+document.getElementById('catFilters').innerHTML = cats.map(c=>
+  `<button class="chip ${c==='all'?'on':''}" onclick="setCat('${c}',this)">${c==='all'?'Todas':c}</button>`).join('');
+function setCat(c,el){activeCat=c;document.querySelectorAll('#catFilters .chip').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderSchedule();}
+
+/* ============ RENDER: dias ============ */
+document.getElementById('dayPills').innerHTML =
+  `<button class="day-pill on" onclick="setDay('all',this)"><div class="d">◎</div><div class="w">Todos</div></button>`+
+  DAYS.map(d=>`<button class="day-pill" onclick="setDay('${d.d}',this)"><div class="d">${d.d}</div><div class="w">${d.w}</div></button>`).join('');
+function setDay(d,el){activeDay=d;document.querySelectorAll('.day-pill').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderSchedule();}
+
+/* ============ RENDER: programação ============ */
+function renderSchedule(){
+  const q=document.getElementById('q').value.toLowerCase().trim();
+  let list=EVENTS.filter(e=>{
+    if(activeDay!=='all'&&e.dia!==activeDay)return false;
+    if(activeCat!=='all'&&e.cat!==activeCat)return false;
+    if(q&&!(e.titulo+' '+e.grupo+' '+e.local).toLowerCase().includes(q))return false;
+    return true;
+  });
+  const box=document.getElementById('evList');
+  if(!list.length){box.innerHTML=`<div class="empty">Nenhum evento encontrado. Tente outro filtro ou termo de busca.</div>`;return;}
+  let html='';let lastDay='';
+  list.forEach(e=>{
+    if(e.dia!==lastDay){
+      const dd=DAYS.find(x=>x.d===e.dia);
+      html+=`<div style="font-family:'Fraunces',serif;font-weight:900;color:var(--roxo-2);font-size:1.1rem;margin:14px 4px 2px">${e.dia} de agosto · ${dd?dd.w:''}</div>`;
+      lastDay=e.dia;
+    }
+    const on=store.favEv.includes(e.id);
+    html+=`<article class="ev">
+      <div class="time">${e.hora}<small>${e.local.split(' ')[0]}</small></div>
+      <div class="body">
+        <h4>${e.titulo} ${e.libras?'<span title="com LIBRAS" style="font-size:.7rem;background:var(--lilas);color:var(--roxo);padding:.1rem .4rem;border-radius:6px;vertical-align:middle">LIBRAS</span>':''}</h4>
+        <div class="meta">
+          <span><span class="cat-dot" style="background:${CAT[e.cat]}"></span>${e.cat}</span>
+          <span>👥 ${e.grupo}</span>
+          <span>📍 ${e.local}</span>
+        </div>
+      </div>
+      <button class="fav ${on?'on':''}" onclick="toggleEv(${e.id})" title="Salvar na minha agenda">${on?'★':'☆'}</button>
+    </article>`;
+  });
+  box.innerHTML=html;
+}
+function toggleEv(id){
+  const i=store.favEv.indexOf(id);
+  if(i>=0){store.favEv.splice(i,1);toast('Removido da agenda');}
+  else{store.favEv.push(id);toast('★ Salvo na Minha Agenda');}
+  save();renderSchedule();updateCount();renderDrawer();
+}
+
+/* ============ RENDER: livros ============ */
+function renderBookFilters(){
+  const bookCats=['all',...Array.from(new Set(BOOKS.map(b=>b.cat).filter(Boolean)))];
+  document.getElementById('bookFilters').innerHTML=bookCats.map((c,i)=>
+    `<button class="chip ${(c===activeBookCat||(i===0&&activeBookCat==='all'))?'on':''}" onclick="setBookCat('${c}',this)">${c==='all'?'Todas':c}</button>`).join('');
+}
+let activeBookCat='all';
+renderBookFilters();
+function setBookCat(c,el){activeBookCat=c;document.querySelectorAll('#bookFilters .chip').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderBooks();}
+function renderBooks(){
+  const q=document.getElementById('bq').value.toLowerCase().trim();
+  let list=BOOKS.filter(b=>{
+    if(activeBookCat!=='all'&&b.cat!==activeBookCat)return false;
+    if(q&&!(b.titulo+' '+b.autor).toLowerCase().includes(q))return false;
+    return true;
+  });
+  const box=document.getElementById('bookGrid');
+  if(!list.length){box.innerHTML=`<div class="empty" style="grid-column:1/-1">Nenhum livro encontrado.</div>`;return;}
+  box.innerHTML=list.map(b=>{
+    const on=store.favBk.includes(b.id);
+    return `<article class="book">
+      <div class="cover" style="background:linear-gradient(150deg,${b.c1},${b.c2})" id="cov-${b.id}">
+        ${b.capa_url?`<img src="${b.capa_url}" alt="Capa de ${b.titulo}">`:`<div class="ct">${b.titulo}</div>`}
+      </div>
+      <div class="info">
+        <span class="bcat">${b.cat||''}</span>
+        <h4>${b.titulo}</h4>
+        <div class="aut">${b.autor}</div>
+        <div class="bfoot">
+          ${b.patrono?'<span class="pill-lanc">★ Patrono</span>':'<span class="pill-lanc">Lançamento</span>'}
+          <button class="bfav ${on?'on':''}" onclick="toggleBk('${b.id}')" title="Favoritar">${on?'♥':'♡'}</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+}
+function loadCover(id,input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const cov=document.getElementById('cov-'+id);
+    const img=document.createElement('img');img.src=e.target.result;
+    cov.appendChild(img);toast('Capa adicionada ✓');
+  };
+  r.readAsDataURL(f);
+}
+function toggleBk(id){
+  const i=store.favBk.indexOf(id);
+  if(i>=0){store.favBk.splice(i,1);toast('Removido dos favoritos');}
+  else{store.favBk.push(id);toast('♥ Livro favoritado');}
+  save();renderBooks();updateCount();renderDrawer();
+}
+
+/* ============ AGENDA DRAWER ============ */
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('overlay').classList.add('on');renderDrawer();}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('on');}
+function renderDrawer(){
+  const body=document.getElementById('drawerBody');
+  const evs=EVENTS.filter(e=>store.favEv.includes(e.id));
+  const bks=BOOKS.filter(b=>store.favBk.includes(b.id));
+  if(!evs.length&&!bks.length){
+    body.innerHTML=`<div class="empty">Sua agenda está vazia.<br><br>Toque na ★ dos eventos e no ♥ dos livros para montar seu roteiro na Feira.</div>`;return;
+  }
+  let h='';
+  if(evs.length){
+    h+=`<div style="font-weight:800;color:var(--roxo-2);margin:6px 0 10px">Eventos (${evs.length})</div>`;
+    evs.sort((a,b)=>a.dia.localeCompare(b.dia));
+    h+=evs.map(e=>`<div class="aitem">
+      <div class="at">${e.dia}/08 · ${e.hora} · ${e.cat}</div>
+      <h5>${e.titulo}</h5>
+      <div style="font-size:.82rem;color:#6b6280">📍 ${e.local}</div>
+      <button class="rm" onclick="toggleEv(${e.id})">✕ remover</button>
+    </div>`).join('');
+  }
+  if(bks.length){
+    h+=`<div style="font-weight:800;color:var(--roxo-2);margin:16px 0 10px">Livros (${bks.length})</div>`;
+    h+=bks.map(b=>`<div class="aitem">
+      <div class="at">${b.cat}</div>
+      <h5>${b.titulo}</h5>
+      <div style="font-size:.82rem;color:#6b6280">${b.autor}</div>
+      <button class="rm" onclick="toggleBk('${b.id}')">✕ remover</button>
+    </div>`).join('');
+  }
+  body.innerHTML=h;
+}
+function updateCount(){
+  const n=store.favEv.length+store.favBk.length;
+  const el=document.getElementById('navCount');
+  el.textContent=n;el.style.display=n?'flex':'none';
+}
+
+/* ============ NEWSLETTER ============ */
+async function subscribe(e){
+  e.preventDefault();
+  const nome=document.getElementById('nsName').value.trim();
+  const email=document.getElementById('nsMail').value.trim();
+  if(window.fdl){
+    const {error}=await window.fdl.from('fl_newsletter').insert({nome,email});
+    if(error){
+      if((error.code==='23505')||/duplicate/i.test(error.message||'')){toast('Você já está inscrito ✓');}
+      else{toast('Não foi possível inscrever agora',true);return false;}
+    }
+  }
+  document.getElementById('newsOk').style.display='block';
+  document.getElementById('nsName').value='';
+  document.getElementById('nsMail').value='';
+  toast('✉ Inscrição registrada!');
+  return false;
+}
+
+/* ============ SUPABASE: carregar dados ao vivo ============ */
+const BOOK_COLORS=[['#5a3a80','#e0489a'],['#c0392b','#f6b64b'],['#2f9e8f','#5a3a80'],
+  ['#7a56a8','#ff6b4a'],['#241633','#e0489a'],['#3d76c4','#2f9e8f'],['#f6b64b','#ff6b4a'],
+  ['#5a3a80','#3d76c4'],['#e0489a','#5a3a80'],['#7a56a8','#e0489a']];
+async function loadFromSupabase(){
+  if(!window.fdl)return;
+  try{
+    const [{data:evs},{data:lvs}]=await Promise.all([
+      window.fdl.from('fl_eventos').select('*').order('dia').order('hora'),
+      window.fdl.from('fl_livros').select('*,fl_autores(nome)').order('criado_em',{ascending:false})
+    ]);
+    if(evs&&evs.length){
+      EVENTS=evs.map(e=>({id:e.id,dia:String(e.dia).slice(8,10),hora:e.hora,cat:e.categoria,
+        titulo:e.titulo,grupo:e.grupo||'',local:e.local||'',libras:!!e.libras}));
+      renderSchedule();renderDrawer();
+    }
+    if(lvs&&lvs.length){
+      BOOKS=lvs.map((l,i)=>{const c=BOOK_COLORS[i%BOOK_COLORS.length];
+        return {id:'db'+l.id,titulo:l.titulo,autor:l.fl_autores?l.fl_autores.nome:'',cat:l.categoria||'',
+          patrono:!!l.patrono,capa_url:l.capa_url,c1:c[0],c2:c[1]};});
+      renderBookFilters();renderBooks();
+    }
+  }catch(err){/* mantém dados de exemplo se offline */}
+}
+
+/* ============ GALERIA DE FOTOS ============ */
+async function renderFotos(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_fotos').select('*').order('criado_em',{ascending:false});
+  const sec=document.getElementById('fotos');const grid=document.getElementById('fotosGrid');
+  if(!data||!data.length){sec.style.display='none';return;}
+  sec.style.display='';
+  grid.innerHTML=data.map(f=>`<figure class="foto-card" onclick="openLightbox('${f.url}')">
+    <img src="${f.url}" alt="${(f.titulo||'Foto da Feira').replace(/"/g,'')}" loading="lazy">
+    ${f.legenda?`<figcaption>${f.legenda}</figcaption>`:''}</figure>`).join('');
+}
+
+/* ============ GALERIA DE VÍDEOS ============ */
+function ytId(u){const m=u.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);return m?m[1]:null;}
+async function renderVideos(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_videos').select('*').order('criado_em',{ascending:false});
+  const sec=document.getElementById('videos');const grid=document.getElementById('videosGrid');
+  if(!data||!data.length){sec.style.display='none';return;}
+  sec.style.display='';
+  grid.innerHTML=data.map(v=>{
+    const yt=ytId(v.url);
+    const thumb=yt?`https://img.youtube.com/vi/${yt}/hqdefault.jpg`:null;
+    return `<a class="video-card" href="${v.url}" target="_blank" rel="noopener">
+      <div class="video-thumb" ${thumb?`style="background-image:url('${thumb}')"`:''}>
+        <span class="play">▶</span></div>
+      <div class="video-info"><span class="vplat">${v.plataforma||'Vídeo'}</span>
+        <h4>${(v.titulo||'').replace(/</g,'&lt;')}</h4>
+        ${v.descricao?`<p>${v.descricao.replace(/</g,'&lt;')}</p>`:''}</div></a>`;
+  }).join('');
+}
+
+/* ============ LIGHTBOX ============ */
+function openLightbox(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('on');}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('on');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
+
+/* ============ TOAST ============ */
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ============ REVEAL + COUNTERS ============ */
+const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const co=new IntersectionObserver(es=>{es.forEach(en=>{
+  if(en.isIntersecting){
+    const el=en.target,end=+el.dataset.count;let n=0;const step=Math.ceil(end/40);
+    const t=setInterval(()=>{n+=step;if(n>=end){n=end;clearInterval(t);}el.textContent=n.toLocaleString('pt-BR');},28);
+    co.unobserve(el);
+  }})},{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+
+/* ============ INIT ============ */
+renderSchedule();renderBooks();updateCount();renderDrawer();
+loadFromSupabase();renderFotos();renderVideos();
+</script>
+</body>
+</html>

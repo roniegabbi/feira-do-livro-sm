@@ -1,0 +1,7 @@
+// Configuração pública do Supabase — Feira do Livro de Santa Maria
+// A chave publishable é pública por design (só permite o que a RLS libera).
+window.FDL_SUPABASE_URL = 'https://kqblnfkynhfvaztnpujw.supabase.co';
+window.FDL_SUPABASE_KEY = 'sb_publishable_hsjMqk4-9a7gDp8zxhQNLg_M7sXAm1U';
+
+// Cria o client (requer que @supabase/supabase-js já esteja carregado)
+window.fdl = window.supabase.createClient(window.FDL_SUPABASE_URL, window.FDL_SUPABASE_KEY);
