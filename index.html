@@ -62,7 +62,17 @@
   .agenda-count{position:absolute;top:-8px;right:-8px;background:var(--coral);color:#fff;
     font-size:.7rem;font-weight:800;min-width:20px;height:20px;border-radius:100px;
     display:flex;align-items:center;justify-content:center;padding:0 5px}
-  @media(max-width:860px){.nav-links{display:none}}
+  .nav-burger{display:none;background:#fff;border:1.5px solid var(--line);border-radius:10px;
+    width:44px;height:44px;font-size:1.25rem;color:var(--roxo);cursor:pointer;align-items:center;justify-content:center}
+  .nav-drop{display:none;flex-direction:column;background:rgba(251,248,244,.98);border-top:1px solid var(--line)}
+  .nav-drop a{padding:.85rem 22px;font-weight:600;color:var(--roxo-2);border-bottom:1px solid var(--line)}
+  .nav-drop.open{display:flex}
+  @media(max-width:860px){
+    .nav-links{display:none}
+    .nav-burger{display:inline-flex}
+  }
+  @media(min-width:861px){.nav-drop{display:none!important}}
+  @media(max-width:400px){.agenda-label{display:none}}
 
   /* ===== Hero — roxo vibrante da Feira, com brilhos quentes ===== */
   .hero{position:relative;overflow:hidden;padding:76px 0 84px;color:#fff;
@@ -76,7 +86,8 @@
   .hb2{width:76px;height:49px;top:128px;right:33%;opacity:.6;animation:fly2 17s ease-in-out infinite}
   @keyframes fly1{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-26px,18px) rotate(-5deg)}}
   @keyframes fly2{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(22px,-14px) rotate(4deg)}}
-  @media(max-width:900px){.hb1{width:96px;height:62px;top:18px;right:6%}.hb2{display:none}}
+  @media(max-width:900px){.hb1{width:96px;height:62px;top:16px;right:5%}.hb2{display:none}}
+  @media(max-width:560px){.hb1{display:none}}
   @keyframes float1{50%{transform:translate(-20px,24px) scale(1.08)}}
   @keyframes float2{50%{transform:translate(24px,-20px) scale(1.05)}}
   .hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:46px;align-items:center}
@@ -340,10 +351,18 @@
     </nav>
     <div class="nav-cta">
       <button class="btn btn-g agenda-btn" onclick="openDrawer()">
-        ★ Minha Agenda
+        ★ <span class="agenda-label">Minha Agenda</span>
         <span class="agenda-count" id="navCount" style="display:none">0</span>
       </button>
+      <button class="nav-burger" aria-label="Abrir menu" onclick="toggleNav()">☰</button>
     </div>
+  </div>
+  <div class="nav-drop" id="navDrop">
+    <a href="#vitrine" onclick="closeNav()">Vitrine</a>
+    <a href="#galeria" onclick="closeNav()">Galeria</a>
+    <a href="#programacao" onclick="closeNav()">Programação</a>
+    <a href="#livros" onclick="closeNav()">Lançamentos</a>
+    <a href="#cidadao" onclick="closeNav()">Participe</a>
   </div>
 </header>
 
@@ -930,6 +949,10 @@ async function renderVideos(){
         ${v.descricao?`<p>${v.descricao.replace(/</g,'&lt;')}</p>`:''}</div></a>`;
   }).join('');
 }
+
+/* ============ MENU MOBILE ============ */
+function toggleNav(){document.getElementById('navDrop').classList.toggle('open');}
+function closeNav(){document.getElementById('navDrop').classList.remove('open');}
 
 /* ============ LIGHTBOX ============ */
 function openLightbox(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('on');}
