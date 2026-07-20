@@ -366,6 +366,40 @@
   .noticia-box h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--roxo-2);margin:.2rem 0 .4rem;line-height:1.1}
   .noticia-box .nm-meta{font-size:.8rem;color:var(--coral);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
   .noticia-box .nm-content p{color:#3f3550;line-height:1.7;margin:0 0 1rem;font-size:1rem}
+
+  /* ===== Exportar A4 (ficha da programação) ===== */
+  .btn-export{display:inline-flex;align-items:center;gap:.45rem;margin-top:14px;background:var(--roxo);color:#fff;
+    border:none;border-radius:100px;font-weight:700;font-size:.9rem;padding:.6rem 1.25rem;cursor:pointer;
+    transition:background .18s ease,transform .18s ease}
+  .btn-export:hover{background:var(--roxo-2);transform:translateY(-1px)}
+  #printArea{display:none}
+  #printArea *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pr-head{position:relative;overflow:hidden;background:linear-gradient(120deg,#6a3aa0 0%,#4a2775 55%,#3d2557 100%);
+    color:#fff;border-radius:14px;padding:20px 24px}
+  .pr-birds{position:absolute;top:16px;right:20px;width:118px;height:34px;opacity:.95}
+  .pr-mark{font-family:'Fraunces',serif;font-size:25pt;font-weight:900;line-height:.95;letter-spacing:-.5px}
+  .pr-mark em{font-style:italic;color:#f6b64b}
+  .pr-sub{font-size:8.6pt;opacity:.94;margin-top:6px;max-width:80%}
+  .pr-title{display:inline-block;margin-top:12px;background:#ff6b4a;color:#fff;font-family:'Fraunces',serif;
+    font-weight:700;font-size:12pt;padding:4px 18px;border-radius:100px}
+  .pr-body{padding:4px 2px 0}
+  .pr-day{background:#5a3a80;color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:11.5pt;
+    padding:5px 14px;border-radius:8px;margin:15px 0 7px;break-after:avoid;page-break-after:avoid}
+  .pr-hora{display:inline-block;background:#f6b64b;color:#3d2557;font-weight:800;font-size:8.5pt;
+    padding:2px 12px;border-radius:100px;margin:9px 0 4px}
+  .pr-item{position:relative;font-size:9.3pt;line-height:1.4;padding:4px 4px 4px 16px;
+    border-bottom:1px solid #ece7f3;break-inside:avoid;page-break-inside:avoid}
+  .pr-item .dot{position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%}
+  .pr-item .t{font-weight:700;color:#241633}
+  .pr-item .m{color:#6b6280;font-size:8.4pt}
+  .pr-foot{background:#efe8f8;color:#3d2557;border-radius:10px;padding:10px 16px;margin-top:16px;
+    font-size:7.8pt;text-align:center;line-height:1.55}
+  @media print{
+    body{background:#fff}
+    body>*{display:none !important}
+    #printArea{display:block !important}
+    @page{size:A4;margin:11mm}
+  }
 </style>
 </head>
 <body>
@@ -537,6 +571,7 @@
       <span class="eye">Programação completa</span>
       <h2>Toda a agenda, dia a dia</h2>
       <p>Busque por título, autor ou grupo, filtre por categoria e escolha o dia. Toque na estrela para salvar na sua agenda pessoal.</p>
+      <button class="btn-export" onclick="exportPrograma('eventos')">⤓ Exportar programação (A4 / PDF)</button>
     </div>
 
     <div class="toolbar reveal">
@@ -580,6 +615,7 @@
       <span class="eye">Dia a dia</span>
       <h2>Programação de lançamentos</h2>
       <p>Todos os lançamentos de livros da 53ª Feira, organizados por dia e horário. Use a busca ou escolha o dia.</p>
+      <button class="btn-export" onclick="exportPrograma('lancamentos')">⤓ Exportar lançamentos (A4 / PDF)</button>
     </div>
     <div class="toolbar reveal">
       <div class="search"><span>&#128269;</span><input type="text" placeholder="Buscar livro, autor ou cidade…" oninput="lancBusca(this.value)"></div>
@@ -691,6 +727,9 @@
 <div class="noticia-modal" id="noticiaModal" onclick="if(event.target===this)closeNoticia()">
   <article class="noticia-box" id="noticiaBox"></article>
 </div>
+
+<!-- ===== ÁREA DE IMPRESSÃO A4 ===== -->
+<div id="printArea"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
@@ -1024,6 +1063,50 @@ async function renderVideos(){
 /* ============ MENU MOBILE ============ */
 function toggleNav(){document.getElementById('navDrop').classList.toggle('open');}
 function closeNav(){document.getElementById('navDrop').classList.remove('open');}
+
+/* ============ EXPORTAR PROGRAMAÇÃO (A4) ============ */
+function escP(s){return (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function exportPrograma(tipo){
+  const WD=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const birds='<svg class="pr-birds" viewBox="0 0 120 34" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round"><path d="M8 24 Q16 10 24 22 Q32 10 40 22"/><path d="M62 16 Q69 5 76 15 Q83 5 90 15"/></svg>';
+  let title, body='';
+  if(tipo==='lancamentos'){
+    title='Programação de Lançamentos';
+    const dias=Array.from(new Set((window.LANCAMENTOS||[]).map(x=>x.dia))).sort();
+    dias.forEach(d=>{
+      const dt=new Date(d+'T12:00:00');
+      body+=`<div class="pr-day">${d.slice(8,10)} de agosto · ${WD[dt.getDay()]}</div>`;
+      let lastH='';
+      window.LANCAMENTOS.filter(x=>x.dia===d).forEach(x=>{
+        if(x.hora!==lastH){body+=`<div class="pr-hora">${escP(x.hora)||'—'}</div>`;lastH=x.hora;}
+        const t=x.texto,i=t.search(/\s[–-]\s/),ti=i>0?t.slice(0,i):t,resto=i>0?t.slice(i+3):'';
+        body+=`<div class="pr-item"><span class="t">${escP(ti)}</span>${resto?` <span class="m">— ${escP(resto)}</span>`:''}</div>`;
+      });
+    });
+  } else {
+    title='Programação Oficial';
+    const dias=Array.from(new Set(EVENTS.map(e=>e.dia))).sort();
+    dias.forEach(d=>{
+      const dd=DAYS.find(x=>x.d===d);
+      body+=`<div class="pr-day">${d} de agosto · ${dd?dd.w:''}</div>`;
+      EVENTS.filter(e=>e.dia===d).forEach(e=>{
+        const c=(typeof CAT!=='undefined'&&CAT[e.cat])||'#5a3a80';
+        body+=`<div class="pr-item"><span class="dot" style="background:${c}"></span>`+
+          `<span class="t">${escP(e.hora)} · ${escP(e.titulo)}${e.libras?' (LIBRAS)':''}</span>`+
+          `<span class="m"> — ${escP(e.grupo)} · ${escP(e.local)} · ${escP(e.cat)}</span></div>`;
+      });
+    });
+  }
+  document.getElementById('printArea').innerHTML=
+    `<div class="pr-head">${birds}
+      <div class="pr-mark">53ª <em>feira do livro</em> de Santa Maria</div>
+      <div class="pr-sub">7 a 22 de agosto de 2026 · Praça Saldanha Marinho · Celebrando os 120 anos de Mário Quintana</div>
+      <div class="pr-title">${title}</div>
+    </div>
+    <div class="pr-body">${body}</div>
+    <div class="pr-foot">Realização: Prefeitura de Santa Maria — Secretarias de Cultura e de Educação · Câmara do Livro · @feiradolivrosm · www.feiradolivrosm.com</div>`;
+  window.print();
+}
 
 /* ============ NOTÍCIAS (blog) ============ */
 let NOTICIAS=[];
