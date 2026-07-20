@@ -136,6 +136,7 @@
     <button class="tab" data-tab="fotos" onclick="setTab('fotos')">Galeria de fotos</button>
     <button class="tab" data-tab="videos" onclick="setTab('videos')">Vídeos</button>
     <button class="tab" data-tab="patrono" onclick="setTab('patrono')">Homenagens</button>
+    <button class="tab" data-tab="noticias" onclick="setTab('noticias')">Notícias</button>
     <button class="tab" data-tab="news" onclick="setTab('news')">Newsletter</button>
   </div>
   <main>
@@ -251,6 +252,34 @@
       </div>
     </section>
 
+    <!-- NOTÍCIAS -->
+    <section id="tab-noticias" class="panel hidden">
+      <div class="card">
+        <h3 id="nt-formtitle">Nova notícia</h3>
+        <div class="form-field" style="text-align:center">
+          <img id="nt-preview" src="" alt="" style="width:100%;max-height:150px;object-fit:cover;border-radius:10px;display:none;margin-bottom:6px">
+        </div>
+        <div class="form-field"><label>Capa</label><input id="nt-file" type="file" accept="image/*" /></div>
+        <div class="form-field"><label>Título</label><input id="nt-titulo" placeholder="Título da notícia" /></div>
+        <div class="row form-field">
+          <div><label>Autor</label><input id="nt-autor" placeholder="Assessoria da Feira" /></div>
+          <div><label>Data</label><input id="nt-data" type="date" /></div>
+        </div>
+        <div class="form-field"><label>Resumo (aparece no card)</label><textarea id="nt-resumo" rows="2"></textarea></div>
+        <div class="form-field"><label>Conteúdo</label><textarea id="nt-conteudo" rows="8" placeholder="Escreva a notícia. Use uma linha em branco para separar parágrafos."></textarea></div>
+        <label class="check form-field"><input id="nt-publicado" type="checkbox" /> Publicar (visível no site)</label>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="saveNoticia()">Salvar</button>
+          <button class="btn btn-g" onclick="novaNoticia()">Nova / limpar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Notícias</h3>
+        <div class="count" id="nt-count"></div>
+        <div class="list" id="nt-list"></div>
+      </div>
+    </section>
+
     <!-- NEWSLETTER -->
     <section id="tab-news" class="panel hidden" style="grid-template-columns:1fr">
       <div class="card">
@@ -297,7 +326,7 @@ async function startApp(email){
   document.getElementById('appView').classList.remove('hidden');
   document.getElementById('whoami').textContent=email;
   await loadRefs();
-  loadEventos();loadLivros();loadFotos();loadVideos();loadNews();loadPatrono();
+  loadEventos();loadLivros();loadFotos();loadVideos();loadNews();loadPatrono();loadNoticias();
 }
 // sessão persistida?
 (async()=>{const {data}=await sb.auth.getSession();
@@ -307,7 +336,7 @@ async function startApp(email){
 /* ===== tabs ===== */
 function setTab(t){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
-  ['eventos','livros','fotos','videos','patrono','news'].forEach(x=>
+  ['eventos','livros','fotos','videos','patrono','noticias','news'].forEach(x=>
     document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
 }
 
@@ -477,6 +506,59 @@ async function saveHomenageada(){
   ],{onConflict:'chave'});
   if(error)return toast(error.message,1);
   toast('Homenageada atualizada ✓');document.getElementById('hm-file').value='';loadPatrono();
+}
+
+/* ===== NOTÍCIAS ===== */
+let NT_ID=null, NT_CAPA='';
+async function loadNoticias(){
+  const {data}=await sb.from('fl_noticias').select('*').order('publicado_em',{ascending:false}).order('id',{ascending:false});
+  const box=document.getElementById('nt-list');
+  document.getElementById('nt-count').textContent=(data||[]).length+' notícias';
+  window.__NOTICIAS=data||[];
+  if(!data||!data.length){box.innerHTML='<div class="empty">Nenhuma notícia ainda.</div>';return;}
+  box.innerHTML=data.map(n=>`<div class="item">
+    ${n.capa_url?`<img class="thumb" src="${n.capa_url}">`:'<div class="thumb"></div>'}
+    <div class="meta"><b>${esc(n.titulo)}</b>
+      <small>${fmtDia(n.publicado_em)} · ${n.publicado?'publicada':'rascunho'}</small></div>
+    <button class="del" style="background:var(--lilas);color:var(--roxo)" onclick="editNoticia(${n.id})">editar</button>
+    <button class="del" onclick="delRow('fl_noticias',${n.id},loadNoticias)">excluir</button>
+  </div>`).join('');
+}
+function editNoticia(id){
+  const n=(window.__NOTICIAS||[]).find(x=>x.id===id);if(!n)return;
+  NT_ID=n.id;NT_CAPA=n.capa_url||'';
+  document.getElementById('nt-formtitle').textContent='Editar notícia';
+  document.getElementById('nt-titulo').value=n.titulo||'';
+  document.getElementById('nt-autor').value=n.autor||'';
+  document.getElementById('nt-data').value=(n.publicado_em||'').slice(0,10);
+  document.getElementById('nt-resumo').value=n.resumo||'';
+  document.getElementById('nt-conteudo').value=n.conteudo||'';
+  document.getElementById('nt-publicado').checked=!!n.publicado;
+  const img=document.getElementById('nt-preview');
+  if(NT_CAPA){img.src=NT_CAPA;img.style.display='block';}else{img.style.display='none';}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function novaNoticia(){
+  NT_ID=null;NT_CAPA='';
+  document.getElementById('nt-formtitle').textContent='Nova notícia';
+  ['nt-titulo','nt-autor','nt-data','nt-resumo','nt-conteudo'].forEach(clr);
+  document.getElementById('nt-publicado').checked=false;
+  document.getElementById('nt-file').value='';
+  document.getElementById('nt-preview').style.display='none';
+}
+async function saveNoticia(){
+  const titulo=val('nt-titulo');if(!titulo)return toast('Informe o título',1);
+  if(document.getElementById('nt-file').files[0]){
+    const u=await uploadImagem('nt-file','noticias');if(u)NT_CAPA=u;}
+  const row={titulo,autor:val('nt-autor')||null,resumo:val('nt-resumo')||null,
+    conteudo:val('nt-conteudo')||null,capa_url:NT_CAPA||null,
+    publicado:document.getElementById('nt-publicado').checked,
+    publicado_em:val('nt-data')||new Date().toISOString().slice(0,10)};
+  let error;
+  if(NT_ID){({error}=await sb.from('fl_noticias').update(row).eq('id',NT_ID));}
+  else{({error}=await sb.from('fl_noticias').insert(row));}
+  if(error)return toast(error.message,1);
+  toast(NT_ID?'Notícia atualizada ✓':'Notícia criada ✓');novaNoticia();loadNoticias();
 }
 
 /* ===== NEWSLETTER ===== */
