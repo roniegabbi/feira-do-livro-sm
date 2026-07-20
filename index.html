@@ -386,7 +386,9 @@
   .pr-day{background:#5a3a80;color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:11.5pt;
     padding:5px 14px;border-radius:8px;margin:15px 0 7px;break-after:avoid;page-break-after:avoid}
   .pr-hora{display:inline-block;background:#f6b64b;color:#3d2557;font-weight:800;font-size:8.5pt;
-    padding:2px 12px;border-radius:100px;margin:9px 0 4px}
+    padding:2px 12px;border-radius:100px;margin:9px 0 4px;break-inside:avoid}
+  .pr-cols{column-count:2;column-gap:18px}
+  .pr-cols .pr-hora{margin-top:2px}
   .pr-item{position:relative;font-size:9.3pt;line-height:1.4;padding:4px 4px 4px 16px;
     border-bottom:1px solid #ece7f3;break-inside:avoid;page-break-inside:avoid}
   .pr-item .dot{position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%}
@@ -420,10 +422,7 @@
       <a href="#cidadao">Participe</a>
     </nav>
     <div class="nav-cta">
-      <button class="btn btn-g agenda-btn" onclick="openDrawer()">
-        ★ <span class="agenda-label">Minha Agenda</span>
-        <span class="agenda-count" id="navCount" style="display:none">0</span>
-      </button>
+      <button class="btn btn-p" onclick="exportPrograma('eventos')">⤓ <span class="agenda-label">Baixe a programação</span></button>
       <button class="nav-burger" aria-label="Abrir menu" onclick="toggleNav()">☰</button>
     </div>
   </div>
@@ -979,8 +978,9 @@ function renderDrawer(){
   body.innerHTML=h;
 }
 function updateCount(){
-  const n=store.favEv.length+store.favBk.length;
   const el=document.getElementById('navCount');
+  if(!el)return;
+  const n=store.favEv.length+store.favBk.length;
   el.textContent=n;el.style.display=n?'flex':'none';
 }
 
@@ -1076,12 +1076,13 @@ function exportPrograma(tipo){
     dias.forEach(d=>{
       const dt=new Date(d+'T12:00:00');
       body+=`<div class="pr-day">${d.slice(8,10)} de agosto · ${WD[dt.getDay()]}</div>`;
-      let lastH='';
+      let inner='',lastH='';
       window.LANCAMENTOS.filter(x=>x.dia===d).forEach(x=>{
-        if(x.hora!==lastH){body+=`<div class="pr-hora">${escP(x.hora)||'—'}</div>`;lastH=x.hora;}
+        if(x.hora!==lastH){inner+=`<div class="pr-hora">${escP(x.hora)||'—'}</div>`;lastH=x.hora;}
         const t=x.texto,i=t.search(/\s[–-]\s/),ti=i>0?t.slice(0,i):t,resto=i>0?t.slice(i+3):'';
-        body+=`<div class="pr-item"><span class="t">${escP(ti)}</span>${resto?` <span class="m">— ${escP(resto)}</span>`:''}</div>`;
+        inner+=`<div class="pr-item"><span class="t">${escP(ti)}</span>${resto?` <span class="m">— ${escP(resto)}</span>`:''}</div>`;
       });
+      body+=`<div class="pr-cols">${inner}</div>`;
     });
   } else {
     title='Programação Oficial';
