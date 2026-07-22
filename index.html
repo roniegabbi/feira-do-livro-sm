@@ -169,10 +169,9 @@
 
   /* ===== Homenagens: Patrono e Homenageada ===== */
   .homenagens{padding:64px 0;background:var(--lilas)}
-  .hom-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-  @media(max-width:780px){.hom-grid{grid-template-columns:1fr}}
-  .hom-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:28px;
-    display:flex;gap:22px;align-items:center;box-shadow:var(--shadow)}
+  .hom-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:22px}
+  .hom-card{flex:1 1 320px;max-width:380px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;
+    display:flex;gap:20px;align-items:center;box-shadow:var(--shadow)}
   @media(max-width:480px){.hom-card{flex-direction:column;text-align:center;gap:16px}}
   .hom-foto{width:132px;height:132px;border-radius:50%;flex:0 0 auto;overflow:hidden;
     display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;
@@ -474,7 +473,7 @@
   <div class="wrap">
     <div class="sec-head reveal" style="max-width:none;text-align:center;margin-bottom:34px">
       <span class="eye">Homenagens</span>
-      <h2>Patrono e Homenageada</h2>
+      <h2>Patrono e Homenageados</h2>
       <p style="margin-left:auto;margin-right:auto">As personalidades celebradas na 53ª edição da Feira do Livro de Santa Maria.</p>
     </div>
     <div class="hom-grid reveal">
@@ -492,6 +491,14 @@
           <span class="hom-badge">Homenageada da 53ª edição</span>
           <h3 id="homNome">Ruth Sopher Pereyron</h3>
           <p id="homDesc">Professora aposentada da UFSM e diretora do Theatro Treze de Maio, referência na vida cultural de Santa Maria.</p>
+        </div>
+      </article>
+      <article class="hom-card" id="hom2Card" style="display:none">
+        <div class="hom-foto" id="hom2Avatar">·</div>
+        <div class="hom-body">
+          <span class="hom-badge">Homenageado(a) da 53ª edição</span>
+          <h3 id="hom2Nome"></h3>
+          <p id="hom2Desc"></p>
         </div>
       </article>
     </div>
@@ -1194,6 +1201,13 @@ async function loadPatrono(){
   if(m.homenageada_nome)document.getElementById('homNome').textContent=m.homenageada_nome;
   if(m.homenageada_desc)document.getElementById('homDesc').textContent=m.homenageada_desc;
   setFoto('homAvatar',m.homenageada_foto,m.homenageada_nome);
+  const c2=document.getElementById('hom2Card');
+  if(m.homenageado2_nome){
+    c2.style.display='';
+    document.getElementById('hom2Nome').textContent=m.homenageado2_nome;
+    document.getElementById('hom2Desc').textContent=m.homenageado2_desc||'';
+    setFoto('hom2Avatar',m.homenageado2_foto,m.homenageado2_nome);
+  }else{c2.style.display='none';}
 }
 
 /* ============ INIT ============ */

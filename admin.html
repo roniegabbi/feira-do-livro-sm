@@ -250,6 +250,18 @@
         <div class="form-field"><label>Descrição</label><textarea id="hm-desc" rows="3"></textarea></div>
         <button class="btn btn-p" onclick="saveHomenageada()">Salvar homenageada</button>
       </div>
+      <div class="card">
+        <h3>2º Homenageado(a)</h3>
+        <div class="form-field" style="text-align:center">
+          <img id="hm2-preview" src="" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;background:var(--lilas);display:none;margin:0 auto 6px">
+          <div id="hm2-noimg" style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--roxo),var(--roxo-3));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;font-weight:800;font-size:2rem;margin:0 auto 6px">·</div>
+        </div>
+        <div class="form-field"><label>Foto</label><input id="hm2-file" type="file" accept="image/*" /></div>
+        <div class="form-field"><label>Nome</label><input id="hm2-nome" placeholder="Nome do 2º homenageado(a)" /></div>
+        <div class="form-field"><label>Descrição</label><textarea id="hm2-desc" rows="3"></textarea></div>
+        <button class="btn btn-p" onclick="saveHomenageado2()">Salvar 2º homenageado</button>
+        <p style="color:#6b6280;font-size:.82rem;margin-top:10px">Enquanto o nome estiver vazio, este card não aparece no site.</p>
+      </div>
     </section>
 
     <!-- NOTÍCIAS -->
@@ -457,7 +469,7 @@ async function addVideo(){
 }
 
 /* ===== HOMENAGENS / CONFIG ===== */
-let PT_FOTO='', HM_FOTO='';
+let PT_FOTO='', HM_FOTO='', HM2_FOTO='';
 async function loadPatrono(){
   const {data}=await sb.from('fl_config').select('*');
   const m={};(data||[]).forEach(r=>m[r.chave]=r.valor);
@@ -471,6 +483,11 @@ async function loadPatrono(){
   document.getElementById('hm-desc').value=m.homenageada_desc||'';
   HM_FOTO=m.homenageada_foto||'';
   togglePreview('hm-preview','hm-noimg',HM_FOTO);
+  // 2º homenageado
+  document.getElementById('hm2-nome').value=m.homenageado2_nome||'';
+  document.getElementById('hm2-desc').value=m.homenageado2_desc||'';
+  HM2_FOTO=m.homenageado2_foto||'';
+  togglePreview('hm2-preview','hm2-noimg',HM2_FOTO);
 }
 function togglePreview(imgId,noId,url){
   const img=document.getElementById(imgId),no=document.getElementById(noId);
@@ -506,6 +523,17 @@ async function saveHomenageada(){
   ],{onConflict:'chave'});
   if(error)return toast(error.message,1);
   toast('Homenageada atualizada ✓');document.getElementById('hm-file').value='';loadPatrono();
+}
+async function saveHomenageado2(){
+  if(document.getElementById('hm2-file').files[0]){
+    const u=await uploadImagem('hm2-file','homenageado2');if(u)HM2_FOTO=u;}
+  const {error}=await sb.from('fl_config').upsert([
+    {chave:'homenageado2_nome',valor:val('hm2-nome')},
+    {chave:'homenageado2_desc',valor:val('hm2-desc')},
+    {chave:'homenageado2_foto',valor:HM2_FOTO}
+  ],{onConflict:'chave'});
+  if(error)return toast(error.message,1);
+  toast('2º homenageado atualizado ✓');document.getElementById('hm2-file').value='';loadPatrono();
 }
 
 /* ===== NOTÍCIAS ===== */
