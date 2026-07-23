@@ -132,18 +132,20 @@
   </div>
   <div class="tabs" id="tabs">
     <button class="tab on" data-tab="eventos" onclick="setTab('eventos')">Programação</button>
+    <button class="tab" data-tab="locais" onclick="setTab('locais')">Locais</button>
     <button class="tab" data-tab="livros" onclick="setTab('livros')">Livros</button>
     <button class="tab" data-tab="fotos" onclick="setTab('fotos')">Galeria de fotos</button>
     <button class="tab" data-tab="videos" onclick="setTab('videos')">Vídeos</button>
     <button class="tab" data-tab="patrono" onclick="setTab('patrono')">Homenagens</button>
     <button class="tab" data-tab="noticias" onclick="setTab('noticias')">Notícias</button>
+    <button class="tab" data-tab="parceiros" onclick="setTab('parceiros')">Parceiros</button>
     <button class="tab" data-tab="news" onclick="setTab('news')">Newsletter</button>
   </div>
   <main>
     <!-- EVENTOS -->
     <section id="tab-eventos" class="panel">
       <div class="card">
-        <h3>Novo evento</h3>
+        <h3 id="ev-formtitle">Novo evento</h3>
         <div class="row form-field">
           <div><label>Data</label><input id="ev-dia" type="date" value="2026-08-07" /></div>
           <div><label>Hora</label><input id="ev-hora" placeholder="14h30" /></div>
@@ -159,12 +161,31 @@
           <label class="check"><input id="ev-libras" type="checkbox" /> com LIBRAS</label>
           <label class="check"><input id="ev-destaque" type="checkbox" /> Destaque na vitrine</label>
         </div>
-        <button class="btn btn-p" onclick="addEvento()">Adicionar evento</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="saveEvento()">Salvar</button>
+          <button class="btn btn-g" onclick="novoEvento()">Novo / limpar</button>
+        </div>
       </div>
       <div class="card">
         <h3>Programação</h3>
         <div class="count" id="ev-count"></div>
         <div class="list" id="ev-list"></div>
+      </div>
+    </section>
+
+    <!-- LOCAIS -->
+    <section id="tab-locais" class="panel hidden">
+      <div class="card">
+        <h3>Novo local</h3>
+        <div class="form-field"><label>Nome do local</label><input id="lc-nome" placeholder="Ex.: Old School Pub" /></div>
+        <div class="form-field"><label>Endereço</label><input id="lc-end" placeholder="Rua, nº, bairro — Santa Maria/RS" /></div>
+        <button class="btn btn-p" onclick="addLocal()">Adicionar local</button>
+        <p style="color:#6b6280;font-size:.82rem;margin-top:10px">Depois de adicionar, o local fica disponível ao criar um evento (aba Programação) e o endereço aparece no site quando o visitante abre o evento.</p>
+      </div>
+      <div class="card">
+        <h3>Locais cadastrados</h3>
+        <div class="count" id="lc-count"></div>
+        <div class="list" id="lc-list"></div>
       </div>
     </section>
 
@@ -292,6 +313,35 @@
       </div>
     </section>
 
+    <!-- PARCEIROS -->
+    <section id="tab-parceiros" class="panel hidden">
+      <div class="card">
+        <h3 id="pc-formtitle">Novo parceiro</h3>
+        <div class="form-field" style="text-align:center">
+          <img id="pc-preview" src="" alt="" style="max-width:100%;max-height:90px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;display:none;margin:0 auto 6px">
+        </div>
+        <div class="form-field"><label>Logo (fundo transparente ou branco)</label><input id="pc-file" type="file" accept="image/*" /></div>
+        <div class="form-field"><label>Nome</label><input id="pc-nome" placeholder="Nome do parceiro" /></div>
+        <div class="row form-field">
+          <div><label>Tipo</label><input id="pc-tipo" list="tipos-parceiro" placeholder="Patrocínio" />
+            <datalist id="tipos-parceiro">
+              <option>Realização</option><option>Patrocínio</option><option>Apoio</option>
+              <option>Incentivo</option><option>Produção</option>
+            </datalist></div>
+          <div><label>Site (opcional)</label><input id="pc-site" placeholder="https://…" /></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="saveParceiro()">Salvar</button>
+          <button class="btn btn-g" onclick="novoParceiro()">Novo / limpar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Parceiros</h3>
+        <div class="count" id="pc-count"></div>
+        <div class="list" id="pc-list"></div>
+      </div>
+    </section>
+
     <!-- NEWSLETTER -->
     <section id="tab-news" class="panel hidden" style="grid-template-columns:1fr">
       <div class="card">
@@ -338,7 +388,7 @@ async function startApp(email){
   document.getElementById('appView').classList.remove('hidden');
   document.getElementById('whoami').textContent=email;
   await loadRefs();
-  loadEventos();loadLivros();loadFotos();loadVideos();loadNews();loadPatrono();loadNoticias();
+  loadEventos();loadLocais();loadLivros();loadFotos();loadVideos();loadNews();loadPatrono();loadNoticias();loadParceiros();
 }
 // sessão persistida?
 (async()=>{const {data}=await sb.auth.getSession();
@@ -348,8 +398,31 @@ async function startApp(email){
 /* ===== tabs ===== */
 function setTab(t){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
-  ['eventos','livros','fotos','videos','patrono','noticias','news'].forEach(x=>
+  ['eventos','locais','livros','fotos','videos','patrono','noticias','parceiros','news'].forEach(x=>
     document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
+}
+
+/* ===== LOCAIS ===== */
+async function loadLocais(){
+  const {data}=await sb.from('fl_locais').select('*').order('nome');
+  const box=document.getElementById('lc-list');
+  document.getElementById('lc-count').textContent=(data||[]).length+' locais';
+  if(!data||!data.length){box.innerHTML='<div class="empty">Nenhum local.</div>';return;}
+  box.innerHTML=data.map(l=>`<div class="item"><div class="meta"><b>${esc(l.nome)}</b>
+    <small>${esc(l.endereco||'sem endereço')}</small></div>
+    <button class="del" onclick='delLocal(${JSON.stringify(l.nome)})'>excluir</button></div>`).join('');
+}
+async function addLocal(){
+  const nome=val('lc-nome');if(!nome)return toast('Informe o nome do local',1);
+  const {error}=await sb.from('fl_locais').insert({nome,endereco:val('lc-end')||null});
+  if(error)return toast(error.message,1);
+  toast('Local adicionado ✓');clr('lc-nome');clr('lc-end');loadLocais();loadRefs();
+}
+async function delLocal(nome){
+  if(!confirm('Excluir este local? (Se algum evento usar este local, a exclusão será bloqueada.)'))return;
+  const {error}=await sb.from('fl_locais').delete().eq('nome',nome);
+  if(error)return toast('Não foi possível excluir: '+error.message,1);
+  toast('Local excluído');loadLocais();loadRefs();
 }
 
 /* ===== refs (categorias, locais, autores) ===== */
@@ -366,26 +439,50 @@ async function loadRefs(){
 }
 
 /* ===== EVENTOS ===== */
+let EV_ID=null;
 async function loadEventos(){
   const {data}=await sb.from('fl_eventos').select('*').order('dia').order('hora');
+  window.__EVENTOS=data||[];
   const box=document.getElementById('ev-list');
   document.getElementById('ev-count').textContent=(data||[]).length+' eventos';
   if(!data||!data.length){box.innerHTML='<div class="empty">Nenhum evento.</div>';return;}
   box.innerHTML=data.map(e=>`<div class="item">
     <div class="meta"><b>${esc(e.titulo)}</b>
       <small>${fmtDia(e.dia)} · ${esc(e.hora)} · ${esc(e.categoria||'')} · ${esc(e.local||'')}${e.libras?' · LIBRAS':''}${e.destaque?' · ★':''}</small></div>
+    <button class="del" style="background:var(--lilas);color:var(--roxo)" onclick="editEvento(${e.id})">editar</button>
     <button class="del" onclick="delRow('fl_eventos',${e.id},loadEventos)">excluir</button></div>`).join('');
 }
-async function addEvento(){
+function editEvento(id){
+  const e=(window.__EVENTOS||[]).find(x=>x.id===id);if(!e)return;
+  EV_ID=e.id;
+  document.getElementById('ev-formtitle').textContent='Editar evento';
+  document.getElementById('ev-dia').value=(e.dia||'').slice(0,10);
+  document.getElementById('ev-hora').value=e.hora||'';
+  document.getElementById('ev-titulo').value=e.titulo||'';
+  document.getElementById('ev-cat').value=e.categoria||'';
+  document.getElementById('ev-local').value=e.local||'';
+  document.getElementById('ev-grupo').value=e.grupo||'';
+  document.getElementById('ev-sinopse').value=e.sinopse||'';
+  document.getElementById('ev-libras').checked=!!e.libras;
+  document.getElementById('ev-destaque').checked=!!e.destaque;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function novoEvento(){
+  EV_ID=null;
+  document.getElementById('ev-formtitle').textContent='Novo evento';
+  ['ev-hora','ev-titulo','ev-grupo','ev-sinopse'].forEach(clr);
+  document.getElementById('ev-libras').checked=false;document.getElementById('ev-destaque').checked=false;
+}
+async function saveEvento(){
   const titulo=val('ev-titulo');if(!titulo)return toast('Informe o título',1);
   const row={dia:val('ev-dia'),hora:val('ev-hora')||'—',titulo,categoria:val('ev-cat'),
     local:val('ev-local'),grupo:val('ev-grupo'),sinopse:val('ev-sinopse'),
     libras:document.getElementById('ev-libras').checked,destaque:document.getElementById('ev-destaque').checked};
-  const {error}=await sb.from('fl_eventos').insert(row);
+  let error;
+  if(EV_ID){({error}=await sb.from('fl_eventos').update(row).eq('id',EV_ID));}
+  else{({error}=await sb.from('fl_eventos').insert(row));}
   if(error)return toast(error.message,1);
-  toast('Evento adicionado');['ev-titulo','ev-grupo','ev-sinopse'].forEach(clr);
-  document.getElementById('ev-libras').checked=false;document.getElementById('ev-destaque').checked=false;
-  loadEventos();
+  toast(EV_ID?'Evento atualizado ✓':'Evento adicionado');novoEvento();loadEventos();
 }
 
 /* ===== LIVROS ===== */
@@ -587,6 +684,49 @@ async function saveNoticia(){
   else{({error}=await sb.from('fl_noticias').insert(row));}
   if(error)return toast(error.message,1);
   toast(NT_ID?'Notícia atualizada ✓':'Notícia criada ✓');novaNoticia();loadNoticias();
+}
+
+/* ===== PARCEIROS ===== */
+let PC_ID=null, PC_LOGO='';
+async function loadParceiros(){
+  const {data}=await sb.from('fl_parceiros').select('*').order('tipo').order('ordem').order('nome');
+  window.__PARCEIROS=data||[];
+  const box=document.getElementById('pc-list');
+  document.getElementById('pc-count').textContent=(data||[]).length+' parceiros';
+  if(!data||!data.length){box.innerHTML='<div class="empty">Nenhum parceiro ainda.</div>';return;}
+  box.innerHTML=data.map(p=>`<div class="item">
+    ${p.logo_url?`<img class="thumb" style="object-fit:contain;background:#fff" src="${p.logo_url}">`:'<div class="thumb"></div>'}
+    <div class="meta"><b>${esc(p.nome)}</b><small>${esc(p.tipo||'')}${p.site?' · '+esc(p.site):''}</small></div>
+    <button class="del" style="background:var(--lilas);color:var(--roxo)" onclick="editParceiro(${p.id})">editar</button>
+    <button class="del" onclick="delRow('fl_parceiros',${p.id},loadParceiros)">excluir</button></div>`).join('');
+}
+function editParceiro(id){
+  const p=(window.__PARCEIROS||[]).find(x=>x.id===id);if(!p)return;
+  PC_ID=p.id;PC_LOGO=p.logo_url||'';
+  document.getElementById('pc-formtitle').textContent='Editar parceiro';
+  document.getElementById('pc-nome').value=p.nome||'';
+  document.getElementById('pc-tipo').value=p.tipo||'';
+  document.getElementById('pc-site').value=p.site||'';
+  const img=document.getElementById('pc-preview');
+  if(PC_LOGO){img.src=PC_LOGO;img.style.display='block';}else{img.style.display='none';}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function novoParceiro(){
+  PC_ID=null;PC_LOGO='';
+  document.getElementById('pc-formtitle').textContent='Novo parceiro';
+  ['pc-nome','pc-tipo','pc-site'].forEach(clr);
+  document.getElementById('pc-file').value='';document.getElementById('pc-preview').style.display='none';
+}
+async function saveParceiro(){
+  const nome=val('pc-nome');if(!nome)return toast('Informe o nome',1);
+  if(document.getElementById('pc-file').files[0]){
+    const u=await uploadImagem('pc-file','parceiros');if(u)PC_LOGO=u;}
+  const row={nome,tipo:val('pc-tipo')||'Patrocínio',site:val('pc-site')||null,logo_url:PC_LOGO||null};
+  let error;
+  if(PC_ID){({error}=await sb.from('fl_parceiros').update(row).eq('id',PC_ID));}
+  else{({error}=await sb.from('fl_parceiros').insert(row));}
+  if(error)return toast(error.message,1);
+  toast(PC_ID?'Parceiro atualizado ✓':'Parceiro adicionado ✓');novoParceiro();loadParceiros();
 }
 
 /* ===== NEWSLETTER ===== */
