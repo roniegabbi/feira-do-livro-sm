@@ -387,6 +387,7 @@
   .ev-top-when{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;margin-top:2px}
   .ev-grupo{color:#6b6280;font-weight:600;margin:.1rem 0 .5rem;font-size:.95rem}
   .ev-local{color:#3f3550;font-size:.96rem;margin:.2rem 0 .5rem}
+  .ev-thumb{float:right;width:58px;height:58px;border-radius:8px;object-fit:cover;margin:0 0 4px 12px}
 
   /* ===== Exportar A4 (ficha da programação) ===== */
   .btn-export{display:inline-flex;align-items:center;gap:.45rem;margin-top:14px;background:var(--roxo);color:#fff;
@@ -904,6 +905,7 @@ function renderSchedule(){
     html+=`<article class="ev" onclick="openEvento(${e.id})">
       <div class="time">${e.hora}<small>${e.local.split(' ')[0]}</small></div>
       <div class="body">
+        ${e.imagem?`<img class="ev-thumb" src="${e.imagem}" alt="">`:''}
         <h4>${e.titulo} ${e.libras?'<span title="com LIBRAS" style="font-size:.7rem;background:var(--lilas);color:var(--roxo);padding:.1rem .4rem;border-radius:6px;vertical-align:middle">LIBRAS</span>':''}</h4>
         <div class="meta">
           <span><span class="cat-dot" style="background:${CAT[e.cat]}"></span>${e.cat}</span>
@@ -1051,7 +1053,7 @@ async function loadFromSupabase(){
     LOCAIS_MAP={};(locais||[]).forEach(l=>{LOCAIS_MAP[l.nome]=l.endereco||'';});
     if(evs&&evs.length){
       EVENTS=evs.map(e=>({id:e.id,dia:String(e.dia).slice(8,10),hora:e.hora,cat:e.categoria,
-        titulo:e.titulo,grupo:e.grupo||'',local:e.local||'',sinopse:e.sinopse||'',libras:!!e.libras}));
+        titulo:e.titulo,grupo:e.grupo||'',local:e.local||'',sinopse:e.sinopse||'',imagem:e.imagem_url||'',libras:!!e.libras}));
       renderSchedule();renderDrawer();
     }
     if(lvs&&lvs.length){
@@ -1144,6 +1146,7 @@ function openEvento(id){
   const cor=(typeof CAT!=='undefined'&&CAT[e.cat])||'#5a3a80';
   document.getElementById('eventoBox').innerHTML=
    `<button class="nm-close" onclick="closeEvento()" aria-label="Fechar">✕</button>
+    ${e.imagem?`<img class="nm-cover" src="${e.imagem}" alt="${escN(e.titulo)}">`:''}
     <div class="ev-top" style="background:${cor}">
       <span class="ev-top-cat">${escN(e.cat)}</span>
       <div class="ev-top-when">${escN(e.dia)} de agosto · ${escN(e.hora)}${e.libras?' · com LIBRAS':''}</div>

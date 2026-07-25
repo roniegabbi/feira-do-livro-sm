@@ -163,6 +163,10 @@
           <label class="check"><input id="ev-libras" type="checkbox" /> com LIBRAS</label>
           <label class="check"><input id="ev-destaque" type="checkbox" /> Destaque na vitrine</label>
         </div>
+        <div class="form-field" style="text-align:center">
+          <img id="ev-imgprev" src="" alt="" style="width:100%;max-height:140px;object-fit:cover;border-radius:10px;display:none;margin-bottom:6px">
+        </div>
+        <div class="form-field"><label>Imagem / cartaz (opcional)</label><input id="ev-imagem" type="file" accept="image/*" /></div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-p" onclick="saveEvento()">Salvar</button>
           <button class="btn btn-g" onclick="novoEvento()">Novo / limpar</button>
@@ -540,7 +544,7 @@ async function loadRefs(){
 }
 
 /* ===== EVENTOS ===== */
-let EV_ID=null;
+let EV_ID=null, EV_IMG='';
 async function loadEventos(){
   const {data}=await sb.from('fl_eventos').select('*').order('dia').order('hora');
   window.__EVENTOS=data||[];
@@ -555,7 +559,7 @@ async function loadEventos(){
 }
 function editEvento(id){
   const e=(window.__EVENTOS||[]).find(x=>x.id===id);if(!e)return;
-  EV_ID=e.id;
+  EV_ID=e.id;EV_IMG=e.imagem_url||'';
   document.getElementById('ev-formtitle').textContent='Editar evento';
   document.getElementById('ev-dia').value=(e.dia||'').slice(0,10);
   document.getElementById('ev-hora').value=e.hora||'';
@@ -566,18 +570,23 @@ function editEvento(id){
   document.getElementById('ev-sinopse').value=e.sinopse||'';
   document.getElementById('ev-libras').checked=!!e.libras;
   document.getElementById('ev-destaque').checked=!!e.destaque;
+  var ip=document.getElementById('ev-imgprev');
+  if(EV_IMG){ip.src=EV_IMG;ip.style.display='block';}else{ip.style.display='none';}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function novoEvento(){
-  EV_ID=null;
+  EV_ID=null;EV_IMG='';
   document.getElementById('ev-formtitle').textContent='Novo evento';
   ['ev-hora','ev-titulo','ev-grupo','ev-sinopse'].forEach(clr);
   document.getElementById('ev-libras').checked=false;document.getElementById('ev-destaque').checked=false;
+  document.getElementById('ev-imagem').value='';document.getElementById('ev-imgprev').style.display='none';
 }
 async function saveEvento(){
   const titulo=val('ev-titulo');if(!titulo)return toast('Informe o título',1);
+  if(document.getElementById('ev-imagem').files[0]){
+    const u=await uploadImagem('ev-imagem','eventos');if(u)EV_IMG=u;}
   const row={dia:val('ev-dia'),hora:val('ev-hora')||'—',titulo,categoria:val('ev-cat'),
-    local:val('ev-local'),grupo:val('ev-grupo'),sinopse:val('ev-sinopse'),
+    local:val('ev-local'),grupo:val('ev-grupo'),sinopse:val('ev-sinopse'),imagem_url:EV_IMG||null,
     libras:document.getElementById('ev-libras').checked,destaque:document.getElementById('ev-destaque').checked};
   let error;
   if(EV_ID){({error}=await sb.from('fl_eventos').update(row).eq('id',EV_ID));}
