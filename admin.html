@@ -134,8 +134,10 @@
     <button class="tab on" data-tab="eventos" onclick="setTab('eventos')">Programação</button>
     <button class="tab" data-tab="locais" onclick="setTab('locais')">Locais</button>
     <button class="tab" data-tab="livros" onclick="setTab('livros')">Livros</button>
+    <button class="tab" data-tab="lancamentos" onclick="setTab('lancamentos')">Prog. Lançamentos</button>
     <button class="tab" data-tab="fotos" onclick="setTab('fotos')">Galeria de fotos</button>
     <button class="tab" data-tab="videos" onclick="setTab('videos')">Vídeos</button>
+    <button class="tab" data-tab="destaques" onclick="setTab('destaques')">Destaques</button>
     <button class="tab" data-tab="patrono" onclick="setTab('patrono')">Homenagens</button>
     <button class="tab" data-tab="noticias" onclick="setTab('noticias')">Notícias</button>
     <button class="tab" data-tab="parceiros" onclick="setTab('parceiros')">Parceiros</button>
@@ -212,6 +214,33 @@
         <h3>Lançamentos</h3>
         <div class="count" id="lv-count"></div>
         <div class="list" id="lv-list"></div>
+      </div>
+    </section>
+
+    <!-- PROG. LANÇAMENTOS -->
+    <section id="tab-lancamentos" class="panel hidden">
+      <div class="card">
+        <h3 id="ln-formtitle">Novo lançamento</h3>
+        <div class="row form-field">
+          <div><label>Data</label><input id="ln-dia" type="date" value="2026-08-07" /></div>
+          <div><label>Hora</label><input id="ln-hora" placeholder="15h" /></div>
+        </div>
+        <div class="form-field"><label>Título do livro</label><input id="ln-titulo" placeholder="Título" /></div>
+        <div class="form-field"><label>Autor(es)</label><input id="ln-autor" placeholder="Autor(es)" /></div>
+        <div class="row form-field">
+          <div><label>Cidade</label><input id="ln-cidade" placeholder="Santa Maria/RS" /></div>
+          <div><label>Editora (opcional)</label><input id="ln-editora" placeholder="Editora UFSM…" /></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="saveLanc()">Salvar</button>
+          <button class="btn btn-g" onclick="novoLanc()">Novo / limpar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Lançamentos</h3>
+        <div class="count" id="ln-count"></div>
+        <input id="ln-busca" placeholder="Filtrar por título ou autor…" oninput="renderLancList()" style="margin-bottom:10px" />
+        <div class="list" id="ln-list"></div>
       </div>
     </section>
 
@@ -313,6 +342,33 @@
       </div>
     </section>
 
+    <!-- DESTAQUES -->
+    <section id="tab-destaques" class="panel hidden">
+      <div class="card">
+        <h3 id="dq-formtitle">Novo destaque</h3>
+        <div class="form-field" style="text-align:center">
+          <img id="dq-preview" src="" alt="" style="width:100%;max-height:150px;object-fit:cover;border-radius:10px;display:none;margin-bottom:6px">
+        </div>
+        <div class="form-field"><label>Imagem de fundo</label><input id="dq-file" type="file" accept="image/*" /></div>
+        <div class="form-field"><label>Título</label><input id="dq-titulo" placeholder="Ex.: Especial Elton John" /></div>
+        <div class="form-field"><label>Subtítulo</label><input id="dq-sub" placeholder="Ex.: 09/08 · Show 100% ao vivo" /></div>
+        <div class="row form-field">
+          <div><label>Etiqueta</label><input id="dq-tag" placeholder="Música, Especial…" /></div>
+          <div><label>Ordem</label><input id="dq-ordem" type="number" value="0" /></div>
+        </div>
+        <div class="form-field"><label>Link (opcional)</label><input id="dq-link" placeholder="#programacao ou https://…" /></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="saveDestaque()">Salvar</button>
+          <button class="btn btn-g" onclick="novoDestaque()">Novo / limpar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Destaques da praça</h3>
+        <div class="count" id="dq-count"></div>
+        <div class="list" id="dq-list"></div>
+      </div>
+    </section>
+
     <!-- PARCEIROS -->
     <section id="tab-parceiros" class="panel hidden">
       <div class="card">
@@ -388,7 +444,7 @@ async function startApp(email){
   document.getElementById('appView').classList.remove('hidden');
   document.getElementById('whoami').textContent=email;
   await loadRefs();
-  loadEventos();loadLocais();loadLivros();loadFotos();loadVideos();loadNews();loadPatrono();loadNoticias();loadParceiros();
+  loadEventos();loadLocais();loadLivros();loadLanc();loadFotos();loadVideos();loadDestaques();loadNews();loadPatrono();loadNoticias();loadParceiros();
 }
 // sessão persistida?
 (async()=>{const {data}=await sb.auth.getSession();
@@ -398,8 +454,53 @@ async function startApp(email){
 /* ===== tabs ===== */
 function setTab(t){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
-  ['eventos','locais','livros','fotos','videos','patrono','noticias','parceiros','news'].forEach(x=>
+  ['eventos','locais','livros','lancamentos','fotos','videos','destaques','patrono','noticias','parceiros','news'].forEach(x=>
     document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
+}
+
+/* ===== PROG. LANÇAMENTOS ===== */
+let LN_ID=null, LN_ALL=[];
+async function loadLanc(){
+  const {data}=await sb.from('fl_lancamentos').select('*').order('dia').order('ordem');
+  LN_ALL=data||[];renderLancList();
+}
+function renderLancList(){
+  const q=(document.getElementById('ln-busca').value||'').toLowerCase().trim();
+  const data=LN_ALL.filter(l=>!q||((l.titulo||'')+' '+(l.autor||'')).toLowerCase().includes(q));
+  document.getElementById('ln-count').textContent=LN_ALL.length+' lançamentos'+(q?' · '+data.length+' filtrados':'');
+  const box=document.getElementById('ln-list');
+  if(!data.length){box.innerHTML='<div class="empty">Nenhum lançamento.</div>';return;}
+  box.innerHTML=data.map(l=>`<div class="item"><div class="meta"><b>${esc(l.titulo)}</b>
+    <small>${fmtDia(l.dia)} · ${esc(l.hora||'')} · ${esc(l.autor||'')}${l.cidade?' · '+esc(l.cidade):''}</small></div>
+    <button class="del" style="background:var(--lilas);color:var(--roxo)" onclick="editLanc(${l.id})">editar</button>
+    <button class="del" onclick="delRow('fl_lancamentos',${l.id},loadLanc)">excluir</button></div>`).join('');
+}
+function editLanc(id){
+  const l=LN_ALL.find(x=>x.id===id);if(!l)return;
+  LN_ID=l.id;
+  document.getElementById('ln-formtitle').textContent='Editar lançamento';
+  document.getElementById('ln-dia').value=(l.dia||'').slice(0,10);
+  document.getElementById('ln-hora').value=l.hora||'';
+  document.getElementById('ln-titulo').value=l.titulo||'';
+  document.getElementById('ln-autor').value=l.autor||'';
+  document.getElementById('ln-cidade').value=l.cidade||'';
+  document.getElementById('ln-editora').value=l.editora||'';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function novoLanc(){
+  LN_ID=null;
+  document.getElementById('ln-formtitle').textContent='Novo lançamento';
+  ['ln-hora','ln-titulo','ln-autor','ln-cidade','ln-editora'].forEach(clr);
+}
+async function saveLanc(){
+  const titulo=val('ln-titulo');if(!titulo)return toast('Informe o título',1);
+  const row={dia:val('ln-dia'),hora:val('ln-hora')||null,titulo,autor:val('ln-autor')||null,
+    cidade:val('ln-cidade')||null,editora:val('ln-editora')||null};
+  let error;
+  if(LN_ID){({error}=await sb.from('fl_lancamentos').update(row).eq('id',LN_ID));}
+  else{({error}=await sb.from('fl_lancamentos').insert(row));}
+  if(error)return toast(error.message,1);
+  toast(LN_ID?'Lançamento atualizado ✓':'Lançamento adicionado');novoLanc();loadLanc();
 }
 
 /* ===== LOCAIS ===== */
@@ -684,6 +785,53 @@ async function saveNoticia(){
   else{({error}=await sb.from('fl_noticias').insert(row));}
   if(error)return toast(error.message,1);
   toast(NT_ID?'Notícia atualizada ✓':'Notícia criada ✓');novaNoticia();loadNoticias();
+}
+
+/* ===== DESTAQUES ===== */
+let DQ_ID=null, DQ_IMG='';
+async function loadDestaques(){
+  const {data}=await sb.from('fl_destaques').select('*').order('ordem').order('id');
+  window.__DESTAQUES=data||[];
+  const box=document.getElementById('dq-list');
+  document.getElementById('dq-count').textContent=(data||[]).length+' destaques';
+  if(!data||!data.length){box.innerHTML='<div class="empty">Nenhum destaque ainda.</div>';return;}
+  box.innerHTML=data.map(d=>`<div class="item">
+    ${d.imagem_url?`<img class="thumb" src="${d.imagem_url}">`:'<div class="thumb"></div>'}
+    <div class="meta"><b>${esc(d.titulo)}</b><small>${esc(d.tag||'')}${d.subtitulo?' · '+esc(d.subtitulo):''}</small></div>
+    <button class="del" style="background:var(--lilas);color:var(--roxo)" onclick="editDestaque(${d.id})">editar</button>
+    <button class="del" onclick="delRow('fl_destaques',${d.id},loadDestaques)">excluir</button></div>`).join('');
+}
+function editDestaque(id){
+  const d=(window.__DESTAQUES||[]).find(x=>x.id===id);if(!d)return;
+  DQ_ID=d.id;DQ_IMG=d.imagem_url||'';
+  document.getElementById('dq-formtitle').textContent='Editar destaque';
+  document.getElementById('dq-titulo').value=d.titulo||'';
+  document.getElementById('dq-sub').value=d.subtitulo||'';
+  document.getElementById('dq-tag').value=d.tag||'';
+  document.getElementById('dq-ordem').value=d.ordem||0;
+  document.getElementById('dq-link').value=d.link||'';
+  const img=document.getElementById('dq-preview');
+  if(DQ_IMG){img.src=DQ_IMG;img.style.display='block';}else{img.style.display='none';}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function novoDestaque(){
+  DQ_ID=null;DQ_IMG='';
+  document.getElementById('dq-formtitle').textContent='Novo destaque';
+  ['dq-titulo','dq-sub','dq-tag','dq-link'].forEach(clr);
+  document.getElementById('dq-ordem').value=0;
+  document.getElementById('dq-file').value='';document.getElementById('dq-preview').style.display='none';
+}
+async function saveDestaque(){
+  const titulo=val('dq-titulo');if(!titulo)return toast('Informe o título',1);
+  if(document.getElementById('dq-file').files[0]){
+    const u=await uploadImagem('dq-file','destaques');if(u)DQ_IMG=u;}
+  const row={titulo,subtitulo:val('dq-sub')||null,tag:val('dq-tag')||null,link:val('dq-link')||null,
+    imagem_url:DQ_IMG||null,ordem:parseInt(val('dq-ordem')||'0',10)||0};
+  let error;
+  if(DQ_ID){({error}=await sb.from('fl_destaques').update(row).eq('id',DQ_ID));}
+  else{({error}=await sb.from('fl_destaques').insert(row));}
+  if(error)return toast(error.message,1);
+  toast(DQ_ID?'Destaque atualizado ✓':'Destaque adicionado ✓');novoDestaque();loadDestaques();
 }
 
 /* ===== PARCEIROS ===== */

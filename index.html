@@ -1099,6 +1099,23 @@ async function renderVideos(){
 function toggleNav(){document.getElementById('navDrop').classList.toggle('open');}
 function closeNav(){document.getElementById('navDrop').classList.remove('open');}
 
+/* ============ DESTAQUES DA PRAÇA ============ */
+async function renderDestaques(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_destaques').select('*').order('ordem').order('id');
+  if(!data||!data.length)return; // mantém os cards de exemplo
+  document.getElementById('vitrineGrid').innerHTML=data.map(function(d){
+    var bg=d.imagem_url?("background-image:url('"+d.imagem_url+"');background-size:cover;background-position:center")
+                       :"background:linear-gradient(135deg,#5a3a80,#3d2557)";
+    var inner=(d.tag?'<span class="tag">'+escN(d.tag)+'</span>':'')+'<h3>'+escN(d.titulo)+'</h3>'+(d.subtitulo?'<p>'+escN(d.subtitulo)+'</p>':'');
+    if(d.link){
+      var ext=/^https?:/.test(d.link)?' target="_blank" rel="noopener"':'';
+      return '<a class="vcard" style="'+bg+'" href="'+escN(d.link)+'"'+ext+'>'+inner+'</a>';
+    }
+    return '<article class="vcard" style="'+bg+'">'+inner+'</article>';
+  }).join('');
+}
+
 /* ============ PARCEIROS / PATROCINADORES ============ */
 async function renderParceiros(){
   if(!window.fdl)return;
@@ -1284,7 +1301,7 @@ async function loadPatrono(){
 
 /* ============ INIT ============ */
 renderSchedule();renderBooks();updateCount();renderDrawer();
-loadFromSupabase();renderFotos();renderVideos();loadPatrono();renderNoticias();renderParceiros();
+loadFromSupabase();renderFotos();renderVideos();loadPatrono();renderNoticias();renderParceiros();renderDestaques();
 </script>
 <script>
 window.LANCAMENTOS = [];
