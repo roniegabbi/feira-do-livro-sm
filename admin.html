@@ -182,11 +182,14 @@
     <!-- LOCAIS -->
     <section id="tab-locais" class="panel hidden">
       <div class="card">
-        <h3>Novo local</h3>
+        <h3 id="lc-formtitle">Novo local</h3>
         <div class="form-field"><label>Nome do local</label><input id="lc-nome" placeholder="Ex.: Old School Pub" /></div>
         <div class="form-field"><label>Endereço</label><input id="lc-end" placeholder="Rua, nº, bairro — Santa Maria/RS" /></div>
-        <button class="btn btn-p" onclick="addLocal()">Adicionar local</button>
-        <p style="color:#6b6280;font-size:.82rem;margin-top:10px">Depois de adicionar, o local fica disponível ao criar um evento (aba Programação) e o endereço aparece no site quando o visitante abre o evento.</p>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="saveLocal()">Salvar</button>
+          <button class="btn btn-g" onclick="novoLocal()">Novo / limpar</button>
+        </div>
+        <p style="color:#6b6280;font-size:.82rem;margin-top:10px">Clique em <b>editar</b> num local da lista para corrigir o endereço. O endereço vale para todos os eventos naquele local.</p>
       </div>
       <div class="card">
         <h3>Locais cadastrados</h3>
@@ -508,20 +511,54 @@ async function saveLanc(){
 }
 
 /* ===== LOCAIS ===== */
+let LC_EDIT=null;
 async function loadLocais(){
   const {data}=await sb.from('fl_locais').select('*').order('nome');
+  window.__LOCAIS=data||[];
   const box=document.getElementById('lc-list');
   document.getElementById('lc-count').textContent=(data||[]).length+' locais';
   if(!data||!data.length){box.innerHTML='<div class="empty">Nenhum local.</div>';return;}
   box.innerHTML=data.map(l=>`<div class="item"><div class="meta"><b>${esc(l.nome)}</b>
     <small>${esc(l.endereco||'sem endereço')}</small></div>
+    <button class="del" style="background:var(--lilas);color:var(--roxo)" onclick='editLocal(${JSON.stringify(l.nome)})'>editar</button>
     <button class="del" onclick='delLocal(${JSON.stringify(l.nome)})'>excluir</button></div>`).join('');
 }
-async function addLocal(){
+function editLocal(nome){
+  const l=(window.__LOCAIS||[]).find(x=>x.nome===nome);if(!l)return;
+  LC_EDIT=l.nome;
+  document.getElementById('lc-formtitle').textContent='Editar local';
+  document.getElementById('lc-nome').value=l.nome||'';
+  document.getElementById('lc-end').value=l.endereco||'';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function novoLocal(){
+  LC_EDIT=null;
+  document.getElementById('lc-formtitle').textContent='Novo local';
+  clr('lc-nome');clr('lc-end');
+}
+async function saveLocal(){
   const nome=val('lc-nome');if(!nome)return toast('Informe o nome do local',1);
-  const {error}=await sb.from('fl_locais').insert({nome,endereco:val('lc-end')||null});
-  if(error)return toast(error.message,1);
-  toast('Local adicionado ✓');clr('lc-nome');clr('lc-end');loadLocais();loadRefs();
+  const end=val('lc-end')||null;
+  if(LC_EDIT){
+    if(nome===LC_EDIT){
+      const {error}=await sb.from('fl_locais').update({endereco:end}).eq('nome',LC_EDIT);
+      if(error)return toast(error.message,1);
+    }else{
+      // renomear: cria o novo, move eventos/livros, apaga o antigo
+      let e1=(await sb.from('fl_locais').insert({nome,endereco:end})).error;
+      if(e1 && !/duplicate|already exists|23505/i.test(e1.message)) return toast(e1.message,1);
+      await sb.from('fl_eventos').update({local:nome}).eq('local',LC_EDIT);
+      await sb.from('fl_livros').update({local:nome}).eq('local',LC_EDIT);
+      const {error}=await sb.from('fl_locais').delete().eq('nome',LC_EDIT);
+      if(error)return toast('Renomeado, mas houve aviso: '+error.message,1);
+    }
+    toast('Local atualizado ✓');
+  }else{
+    const {error}=await sb.from('fl_locais').insert({nome,endereco:end});
+    if(error)return toast(error.message,1);
+    toast('Local adicionado ✓');
+  }
+  novoLocal();loadLocais();loadRefs();
 }
 async function delLocal(nome){
   if(!confirm('Excluir este local? (Se algum evento usar este local, a exclusão será bloqueada.)'))return;
