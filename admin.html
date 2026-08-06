@@ -141,6 +141,7 @@
     <button class="tab" data-tab="patrono" onclick="setTab('patrono')">Homenagens</button>
     <button class="tab" data-tab="noticias" onclick="setTab('noticias')">Notícias</button>
     <button class="tab" data-tab="parceiros" onclick="setTab('parceiros')">Parceiros</button>
+    <button class="tab" data-tab="maratona" onclick="setTab('maratona')">Maratona</button>
     <button class="tab" data-tab="news" onclick="setTab('news')">Newsletter</button>
   </div>
   <main>
@@ -405,6 +406,33 @@
       </div>
     </section>
 
+    <!-- MARATONA -->
+    <section id="tab-maratona" class="panel hidden">
+      <div class="card">
+        <h3 id="ma-formtitle">Nova inscrição</h3>
+        <div class="form-field"><label>Nome (escola/empresa/pessoa)</label><input id="ma-nome" /></div>
+        <div class="row form-field">
+          <div><label>Horário</label><input id="ma-horario" placeholder="10h às 12h" /></div>
+          <div><label>Aberta ao público?</label><select id="ma-aberta"><option>Não</option><option>Sim</option></select></div>
+        </div>
+        <div class="form-field"><label>Endereço</label><input id="ma-endereco" /></div>
+        <div class="form-field"><label>Atividade (título)</label><input id="ma-atividade" /></div>
+        <div class="form-field"><label>Resumo</label><textarea id="ma-resumo" rows="3"></textarea></div>
+        <div class="form-field"><label>Como participar</label><input id="ma-detalhes" /></div>
+        <label class="check form-field"><input id="ma-aprovado" type="checkbox" /> Aprovado (visível no site)</label>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="saveMaratona()">Salvar</button>
+          <button class="btn btn-g" onclick="novaMaratona()">Nova / limpar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Inscrições</h3>
+        <div class="count" id="ma-count"></div>
+        <input id="ma-busca" placeholder="Filtrar por escola ou atividade…" oninput="renderMaratonaAdmin()" style="margin-bottom:10px" />
+        <div class="list" id="ma-list"></div>
+      </div>
+    </section>
+
     <!-- NEWSLETTER -->
     <section id="tab-news" class="panel hidden" style="grid-template-columns:1fr">
       <div class="card">
@@ -451,7 +479,7 @@ async function startApp(email){
   document.getElementById('appView').classList.remove('hidden');
   document.getElementById('whoami').textContent=email;
   await loadRefs();
-  loadEventos();loadLocais();loadLivros();loadLanc();loadFotos();loadVideos();loadDestaques();loadNews();loadPatrono();loadNoticias();loadParceiros();
+  loadEventos();loadLocais();loadLivros();loadLanc();loadFotos();loadVideos();loadDestaques();loadNews();loadPatrono();loadNoticias();loadParceiros();loadMaratona();
 }
 // sessão persistida?
 (async()=>{const {data}=await sb.auth.getSession();
@@ -461,7 +489,7 @@ async function startApp(email){
 /* ===== tabs ===== */
 function setTab(t){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
-  ['eventos','locais','livros','lancamentos','fotos','videos','destaques','patrono','noticias','parceiros','news'].forEach(x=>
+  ['eventos','locais','livros','lancamentos','fotos','videos','destaques','patrono','noticias','parceiros','maratona','news'].forEach(x=>
     document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
 }
 
@@ -878,6 +906,61 @@ async function saveDestaque(){
   else{({error}=await sb.from('fl_destaques').insert(row));}
   if(error)return toast(error.message,1);
   toast(DQ_ID?'Destaque atualizado ✓':'Destaque adicionado ✓');novoDestaque();loadDestaques();
+}
+
+/* ===== MARATONA ===== */
+let MA_ID=null, MA_ALL=[];
+async function loadMaratona(){
+  const {data}=await sb.from('fl_maratona').select('*').order('aprovado').order('horario');
+  MA_ALL=data||[];renderMaratonaAdmin();
+}
+function renderMaratonaAdmin(){
+  const q=(document.getElementById('ma-busca').value||'').toLowerCase().trim();
+  const data=MA_ALL.filter(m=>!q||((m.nome||'')+' '+(m.atividade||'')).toLowerCase().includes(q));
+  const pend=MA_ALL.filter(m=>!m.aprovado).length;
+  document.getElementById('ma-count').textContent=MA_ALL.length+' inscrições'+(pend?' · '+pend+' pendente(s)':'');
+  const box=document.getElementById('ma-list');
+  if(!data.length){box.innerHTML='<div class="empty">Nenhuma inscrição.</div>';return;}
+  box.innerHTML=data.map(m=>`<div class="item"><div class="meta">
+    <b>${esc(m.atividade||'—')}${m.aprovado?'':' <span style="color:var(--coral);font-size:.72rem">● pendente</span>'}</b>
+    <small>${esc(m.nome||'')} · ${esc(m.horario||'')}${m.aberta==='Sim'?' · aberta':''}</small></div>
+    ${m.aprovado?`<button class="del" style="background:#e7f6f3;color:#1d7a5f" onclick="aprovarMaratona(${m.id},false)">ocultar</button>`:`<button class="del" style="background:#e7f6f3;color:#1d7a5f" onclick="aprovarMaratona(${m.id},true)">aprovar</button>`}
+    <button class="del" style="background:var(--lilas);color:var(--roxo)" onclick="editMaratona(${m.id})">editar</button>
+    <button class="del" onclick="delRow('fl_maratona',${m.id},loadMaratona)">excluir</button></div>`).join('');
+}
+async function aprovarMaratona(id,v){
+  const {error}=await sb.from('fl_maratona').update({aprovado:v}).eq('id',id);
+  if(error)return toast(error.message,1);toast(v?'Publicada ✓':'Ocultada');loadMaratona();
+}
+function editMaratona(id){
+  const m=MA_ALL.find(x=>x.id===id);if(!m)return;MA_ID=m.id;
+  document.getElementById('ma-formtitle').textContent='Editar inscrição';
+  document.getElementById('ma-nome').value=m.nome||'';
+  document.getElementById('ma-horario').value=m.horario||'';
+  document.getElementById('ma-aberta').value=m.aberta||'Não';
+  document.getElementById('ma-endereco').value=m.endereco||'';
+  document.getElementById('ma-atividade').value=m.atividade||'';
+  document.getElementById('ma-resumo').value=m.resumo||'';
+  document.getElementById('ma-detalhes').value=m.detalhes||'';
+  document.getElementById('ma-aprovado').checked=!!m.aprovado;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function novaMaratona(){
+  MA_ID=null;document.getElementById('ma-formtitle').textContent='Nova inscrição';
+  ['ma-nome','ma-horario','ma-endereco','ma-atividade','ma-resumo','ma-detalhes'].forEach(clr);
+  document.getElementById('ma-aberta').value='Não';document.getElementById('ma-aprovado').checked=false;
+}
+async function saveMaratona(){
+  const nome=val('ma-nome');if(!nome)return toast('Informe o nome',1);
+  const row={nome,atividade:val('ma-atividade')||null,horario:val('ma-horario')||null,
+    endereco:val('ma-endereco')||null,resumo:val('ma-resumo')||null,
+    aberta:document.getElementById('ma-aberta').value,detalhes:val('ma-detalhes')||null,
+    aprovado:document.getElementById('ma-aprovado').checked};
+  let error;
+  if(MA_ID){({error}=await sb.from('fl_maratona').update(row).eq('id',MA_ID));}
+  else{({error}=await sb.from('fl_maratona').insert(row));}
+  if(error)return toast(error.message,1);
+  toast(MA_ID?'Atualizada ✓':'Adicionada');novaMaratona();loadMaratona();
 }
 
 /* ===== PARCEIROS ===== */
