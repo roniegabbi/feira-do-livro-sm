@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Notícias · 53ª Feira do Livro de Santa Maria</title>
+<meta name="description" content="Novidades, bastidores e comunicados da 53ª Feira do Livro de Santa Maria." />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/estilo.css" />
+</head>
+<body data-page="noticias.html">
+<div id="site-header"></div>
+
+<section class="page-head">
+  <div class="wrap">
+    <span class="eye">Fique por dentro</span>
+    <h1>Notícias da Feira</h1>
+    <p>Novidades, bastidores e comunicados da 53ª Feira do Livro de Santa Maria.</p>
+  </div>
+</section>
+
+<section class="page-sec">
+  <div class="wrap">
+    <div class="news-grid" id="newsGrid"></div>
+    <div id="newsEmpty" class="empty" style="display:none">Ainda não há notícias publicadas. Volte em breve.</div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<div class="noticia-modal" id="noticiaModal" onclick="if(event.target===this)closeNoticia()">
+  <article class="noticia-box" id="noticiaBox"></article>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/comum.js"></script>
+<script>
+let NOTICIAS=[];
+async function renderNoticias(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_noticias').select('*').eq('publicado',true)
+    .order('publicado_em',{ascending:false}).order('id',{ascending:false});
+  NOTICIAS=data||[];
+  const grid=document.getElementById('newsGrid');
+  if(!NOTICIAS.length){document.getElementById('newsEmpty').style.display='';return;}
+  grid.innerHTML=NOTICIAS.map(n=>`<article class="news-card" onclick="openNoticia(${n.id})">
+    <div class="news-cover">${n.capa_url?`<img src="${n.capa_url}" alt="${escN(n.titulo)}" loading="lazy">`:''}</div>
+    <div class="news-body">
+      <span class="news-date">${fmtData(n.publicado_em)}</span>
+      <h3>${escN(n.titulo)}</h3>
+      ${n.resumo?`<p>${escN(n.resumo)}</p>`:''}
+      <span class="news-more">Ler notícia →</span>
+    </div></article>`).join('');
+  const p=new URLSearchParams(location.search).get('noticia');
+  if(p)openNoticia(parseInt(p,10));
+}
+function openNoticia(id){
+  const n=NOTICIAS.find(x=>x.id===id);if(!n)return;
+  const paras=(n.conteudo||'').split(/\n\s*\n/).filter(Boolean)
+    .map(p=>`<p>${escN(p).replace(/\n/g,'<br>')}</p>`).join('');
+  document.getElementById('noticiaBox').innerHTML=
+    `<button class="nm-close" onclick="closeNoticia()" aria-label="Fechar">✕</button>
+    ${n.capa_url?`<img class="nm-cover" src="${escN(n.capa_url)}" alt="${escN(n.titulo)}">`:''}
+    <div class="nm-inner">
+      <div class="nm-meta">${fmtData(n.publicado_em)}${n.autor?' · '+escN(n.autor):''}</div>
+      <h2>${escN(n.titulo)}</h2>
+      <div class="nm-content">${paras||'<p></p>'}</div>
+    </div>`;
+  document.getElementById('noticiaModal').classList.add('on');
+  document.body.style.overflow='hidden';
+  history.replaceState(null,'',location.pathname+'?noticia='+id);
+}
+function closeNoticia(){
+  document.getElementById('noticiaModal').classList.remove('on');
+  document.body.style.overflow='';
+  history.replaceState(null,'',location.pathname);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNoticia();});
+renderNoticias();
+</script>
+</body>
+</html>
