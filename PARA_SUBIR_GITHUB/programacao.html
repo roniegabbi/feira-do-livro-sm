@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Programação · 53ª Feira do Livro de Santa Maria</title>
+<meta name="description" content="Programação completa da 53ª Feira do Livro de Santa Maria, dia a dia, com filtros por categoria." />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/estilo.css" />
+</head>
+<body data-page="programacao.html">
+<div id="site-header"></div>
+
+<section class="page-head">
+  <div class="wrap">
+    <span class="eye">7 a 22 de agosto · 2026</span>
+    <h1>Programação</h1>
+    <p>Toda a agenda da Feira, dia a dia. Busque por título, autor ou grupo, filtre por categoria e escolha o dia. Toque num evento para ver a descrição, o local e o endereço.</p>
+  </div>
+</section>
+
+<section class="page-sec">
+  <div class="wrap">
+    <div class="toolbar">
+      <div class="search"><span>🔍</span><input id="q" type="text" placeholder="Buscar espetáculo, autor, grupo…" oninput="renderSchedule()" /></div>
+      <div class="filters" id="catFilters"></div>
+    </div>
+    <button class="btn-export" onclick="exportPrograma()">⤓ Exportar programação (A4 / PDF)</button>
+    <div class="days" id="dayPills" style="margin-top:16px"></div>
+    <div class="ev-list" id="evList"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<div class="noticia-modal" id="eventoModal" onclick="if(event.target===this)closeEvento()">
+  <article class="noticia-box" id="eventoBox"></article>
+</div>
+<div id="printArea"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/comum.js"></script>
+<script>
+const CAT={'Infantil':'#e0489a','Livro Livre':'#5a3a80','Música':'#f6b64b','Espetáculo':'#7a56a8','Cinema':'#2f9e8f','Praça':'#ff6b4a','Lançamento':'#3d76c4','Especial':'#c0392b','Literatura':'#2e7d32','Biblioteca':'#0891b2','Estande UFSM':'#7c3aed'};
+const DAYS=[{d:'07',w:'Sex'},{d:'08',w:'Sáb'},{d:'09',w:'Dom'},{d:'10',w:'Seg'},{d:'11',w:'Ter'},{d:'12',w:'Qua'},{d:'13',w:'Qui'},{d:'14',w:'Sex'},{d:'15',w:'Sáb'},{d:'16',w:'Dom'},{d:'17',w:'Seg'},{d:'18',w:'Ter'},{d:'19',w:'Qua'},{d:'20',w:'Qui'},{d:'21',w:'Sex'},{d:'22',w:'Sáb'}];
+let EVENTS=[], LOCAIS_MAP={}, activeDay=defaultDia(), activeCat='all';
+function esc(s){return escN(s);}
+async function load(){
+  if(!window.fdl){document.getElementById('evList').innerHTML='<div class="empty">Sem conexão com o banco.</div>';return;}
+  const r=await Promise.all([
+    fdl.from('fl_eventos').select('*').order('dia').order('hora'),
+    fdl.from('fl_locais').select('nome,endereco')
+  ]);
+  const evs=r[0].data||[], locais=r[1].data||[];
+  LOCAIS_MAP={};locais.forEach(l=>{LOCAIS_MAP[l.nome]=l.endereco||'';});
+  EVENTS=evs.map(e=>({id:e.id,dia:String(e.dia).slice(8,10),hora:e.hora,cat:e.categoria,titulo:e.titulo,grupo:e.grupo||'',local:e.local||'',sinopse:e.sinopse||'',imagem:e.imagem_url||'',libras:!!e.libras}));
+  buildFilters();buildDays();renderSchedule();
+}
+function buildFilters(){
+  const cats=['all',...Object.keys(CAT)];
+  document.getElementById('catFilters').innerHTML=cats.map(c=>`<button class="chip ${c===activeCat?'on':''}" onclick="setCat('${c}',this)">${c==='all'?'Todas':c}</button>`).join('');
+}
+function setCat(c,el){activeCat=c;document.querySelectorAll('#catFilters .chip').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderSchedule();}
+function buildDays(){
+  document.getElementById('dayPills').innerHTML=
+    `<button class="day-pill${activeDay==='all'?' on':''}" onclick="setDay('all',this)"><div class="d">◎</div><div class="w">Todos</div></button>`+
+    DAYS.map(d=>`<button class="day-pill${activeDay===d.d?' on':''}" onclick="setDay('${d.d}',this)"><div class="d">${d.d}</div><div class="w">${d.w}</div></button>`).join('');
+  const a=document.querySelector('#dayPills .day-pill.on');if(a&&a.scrollIntoView)a.scrollIntoView({inline:'center',block:'nearest'});
+}
+function setDay(d,el){activeDay=d;document.querySelectorAll('.day-pill').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderSchedule();}
+function renderSchedule(){
+  const q=document.getElementById('q').value.toLowerCase().trim();
+  let list=EVENTS.filter(e=>{
+    if(activeDay!=='all'&&e.dia!==activeDay)return false;
+    if(activeCat!=='all'&&e.cat!==activeCat)return false;
+    if(q&&!(e.titulo+' '+e.grupo+' '+e.local).toLowerCase().includes(q))return false;
+    return true;});
+  const box=document.getElementById('evList');
+  if(!list.length){box.innerHTML='<div class="empty">Nenhum evento encontrado. Tente outro filtro ou dia.</div>';return;}
+  let html='',lastDay='';
+  list.forEach(e=>{
+    if(e.dia!==lastDay){const dd=DAYS.find(x=>x.d===e.dia);html+=`<div style="font-family:'Fraunces',serif;font-weight:900;color:var(--roxo-2);font-size:1.1rem;margin:14px 4px 2px">${e.dia} de agosto · ${dd?dd.w:''}</div>`;lastDay=e.dia;}
+    html+=`<article class="ev" onclick="openEvento(${e.id})">
+      <div class="time">${esc(e.hora)}<small>${esc((e.local||'').split(' ')[0])}</small></div>
+      <div class="body">${e.imagem?`<img class="ev-thumb" src="${esc(e.imagem)}" alt="">`:''}
+        <h4>${esc(e.titulo)} ${e.libras?'<span style="font-size:.7rem;background:var(--lilas);color:var(--roxo);padding:.1rem .4rem;border-radius:6px">LIBRAS</span>':''}</h4>
+        <div class="meta"><span><span class="cat-dot" style="background:${CAT[e.cat]||'#5a3a80'}"></span>${esc(e.cat)}</span><span>👥 ${esc(e.grupo)}</span><span>📍 ${esc(e.local)}</span><span class="ev-detalhe">ver detalhes →</span></div>
+      </div></article>`;
+  });
+  box.innerHTML=html;
+}
+function openEvento(id){
+  const e=EVENTS.find(x=>x.id===id);if(!e)return;
+  const end=LOCAIS_MAP[e.local]||'', cor=CAT[e.cat]||'#5a3a80';
+  document.getElementById('eventoBox').innerHTML=
+   `<button class="nm-close" onclick="closeEvento()">✕</button>
+    ${e.imagem?`<img class="nm-cover" src="${esc(e.imagem)}" alt="">`:''}
+    <div class="ev-top" style="background:${cor}"><span class="ev-top-cat">${esc(e.cat)}</span><div class="ev-top-when">${esc(e.dia)} de agosto · ${esc(e.hora)}${e.libras?' · com LIBRAS':''}</div></div>
+    <div class="nm-inner"><h2>${esc(e.titulo)}</h2>${e.grupo?`<p class="ev-grupo">${esc(e.grupo)}</p>`:''}
+      <p class="ev-local">📍 <b>${esc(e.local)}</b>${end?` — ${esc(end)}`:''}</p>
+      ${e.sinopse?`<div class="nm-content"><p>${esc(e.sinopse).replace(/\n/g,'<br>')}</p></div>`:'<p style="color:#8a8299;margin-top:8px">Sem descrição cadastrada.</p>'}
+    </div>`;
+  document.getElementById('eventoModal').classList.add('on');document.body.style.overflow='hidden';
+}
+function closeEvento(){document.getElementById('eventoModal').classList.remove('on');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEvento();});
+function escP(s){return (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function exportPrograma(){
+  const WD={'07':'Sex','08':'Sáb','09':'Dom','10':'Seg','11':'Ter','12':'Qua','13':'Qui','14':'Sex','15':'Sáb','16':'Dom','17':'Seg','18':'Ter','19':'Qua','20':'Qui','21':'Sex','22':'Sáb'};
+  const birds='<svg class="pr-birds" viewBox="0 0 120 34" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"><path d="M8 24 Q16 10 24 22 Q32 10 40 22"/><path d="M62 16 Q69 5 76 15 Q83 5 90 15"/></svg>';
+  let body='';const dias=Array.from(new Set(EVENTS.map(e=>e.dia))).sort();
+  dias.forEach(d=>{body+=`<div class="pr-day">${d} de agosto · ${WD[d]||''}</div>`;
+    EVENTS.filter(e=>e.dia===d).forEach(e=>{const c=CAT[e.cat]||'#5a3a80';
+      body+=`<div class="pr-item"><span class="dot" style="background:${c}"></span><span class="t">${escP(e.hora)} · ${escP(e.titulo)}${e.libras?' (LIBRAS)':''}</span><span class="m"> — ${escP(e.grupo)} · ${escP(e.local)} · ${escP(e.cat)}</span></div>`;});});
+  document.getElementById('printArea').innerHTML=`<div class="pr-head">${birds}<div class="pr-mark">53ª <em>feira do livro</em> de Santa Maria</div><div class="pr-sub">7 a 22 de agosto de 2026 · Praça Saldanha Marinho · Celebrando os 120 anos de Mário Quintana</div><div class="pr-title">Programação Oficial</div></div><div class="pr-body">${body}</div><div class="pr-foot">Realização: Prefeitura de Santa Maria — Secretarias de Cultura e de Educação · @feiradolivrosm · www.feiradolivrosm.com</div>`;
+  window.print();
+}
+load();
+</script>
+</body>
+</html>

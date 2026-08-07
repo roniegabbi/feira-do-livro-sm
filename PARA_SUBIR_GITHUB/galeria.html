@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Galeria · 53ª Feira do Livro de Santa Maria</title>
+<meta name="description" content="Fotos, vídeos e material oficial da 53ª Feira do Livro de Santa Maria." />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/estilo.css" />
+</head>
+<body data-page="galeria.html">
+<div id="site-header"></div>
+
+<section class="page-head">
+  <div class="wrap">
+    <span class="eye">Identidade visual · Momentos · Vídeos</span>
+    <h1>A galeria da Feira</h1>
+    <p>O material oficial da 53ª edição — cartaz, marcador e as versões da marca — além de fotos e vídeos. Clique para ampliar. Ilustração de Betina Menine Toniazzo.</p>
+  </div>
+</section>
+
+<section class="page-sec">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eye">Material oficial</span><h2>Cartaz e marca</h2></div>
+    <div class="gal-grid reveal">
+      <div class="gitem" onclick="openLightbox('assets/cartaz.png')"><img src="assets/cartaz.png" alt="Cartaz oficial" /><span class="gcap">Cartaz oficial</span></div>
+      <div class="gitem" onclick="openLightbox('assets/marcador.png')"><img src="assets/marcador.png" alt="Marcador de páginas" /><span class="gcap">Marcador de páginas</span></div>
+      <div class="gitem logo lightbg" onclick="openLightbox('assets/marca-roxo.png')"><img src="assets/marca-roxo.png" alt="Marca — versão roxa" /><span class="gcap">Marca · versão roxa</span></div>
+      <div class="gitem logo darkbg" onclick="openLightbox('assets/marca-branca.png')"><img src="assets/marca-branca.png" alt="Marca — versão branca" /><span class="gcap">Marca · versão branca</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="page-sec" id="fotos" style="display:none;background:var(--lilas)">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eye">Momentos</span><h2>Galeria de fotos</h2><p>Registros da Feira. Clique para ampliar.</p></div>
+    <div class="fotos-grid reveal" id="fotosGrid"></div>
+  </div>
+</section>
+
+<section class="page-sec" id="videos" style="display:none">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eye">Assista</span><h2>Vídeos da Feira</h2><p>Coberturas, entrevistas e destaques publicados pela organização.</p></div>
+    <div class="videos-grid reveal" id="videosGrid"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()" aria-label="Fechar">✕</button>
+  <img id="lbImg" src="" alt="" />
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/comum.js"></script>
+<script>
+function openLightbox(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('on');}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('on');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
+async function renderFotos(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_fotos').select('*').order('criado_em',{ascending:false});
+  const sec=document.getElementById('fotos'),grid=document.getElementById('fotosGrid');
+  if(!data||!data.length){sec.style.display='none';return;}
+  sec.style.display='';
+  grid.innerHTML=data.map(f=>`<figure class="foto-card" onclick="openLightbox('${f.url}')">
+    <img src="${f.url}" alt="${escN(f.titulo||'Foto da Feira')}" loading="lazy">
+    ${f.legenda?`<figcaption>${escN(f.legenda)}</figcaption>`:''}</figure>`).join('');
+}
+function ytId(u){const m=u.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);return m?m[1]:null;}
+async function renderVideos(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_videos').select('*').order('criado_em',{ascending:false});
+  const sec=document.getElementById('videos'),grid=document.getElementById('videosGrid');
+  if(!data||!data.length){sec.style.display='none';return;}
+  sec.style.display='';
+  grid.innerHTML=data.map(v=>{
+    const yt=ytId(v.url);const thumb=yt?`https://img.youtube.com/vi/${yt}/hqdefault.jpg`:null;
+    return `<a class="video-card" href="${v.url}" target="_blank" rel="noopener">
+      <div class="video-thumb" ${thumb?`style="background-image:url('${thumb}')"`:''}><span class="play">▶</span></div>
+      <div class="video-info"><span class="vplat">${escN(v.plataforma||'Vídeo')}</span>
+        <h4>${escN(v.titulo||'')}</h4>${v.descricao?`<p>${escN(v.descricao)}</p>`:''}</div></a>`;
+  }).join('');
+}
+renderFotos();renderVideos();
+</script>
+</body>
+</html>

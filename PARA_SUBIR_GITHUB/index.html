@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>53ª Feira do Livro de Santa Maria — 7 a 22 de agosto de 2026</title>
+<meta name="description" content="A 53ª Feira do Livro de Santa Maria toma a Praça Saldanha Marinho com espetáculos, lançamentos, música e encontros literários, celebrando os 120 anos de Mário Quintana." />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/estilo.css" />
+</head>
+<body data-page="index.html">
+<div id="site-header"></div>
+
+<section class="hero" id="topo">
+  <div class="spark s1"></div><div class="spark s2"></div><div class="spark s3"></div>
+  <div class="hero-bird hb1" aria-hidden="true"></div>
+  <div class="hero-bird hb2" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">✦ 7 a 22 de agosto · 2026 · Praça Saldanha Marinho</span>
+      <h1>A cidade que <em>lê</em> em voz alta.</h1>
+      <p class="lead">A 53ª Feira do Livro de Santa Maria toma a praça com espetáculos, lançamentos, música e encontros literários — celebrando os 120 anos de Mário Quintana. Monte a sua agenda e viva 16 dias de leitura.</p>
+      <div class="hero-meta">
+        <div><b>258</b><small>lançamentos</small></div>
+        <div><b>16</b><small>dias de festa</small></div>
+        <div><b>1000+</b><small>autores</small></div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-p" href="programacao.html">Ver programação →</a>
+        <a class="btn btn-g" href="galeria.html">Ver a galeria</a>
+      </div>
+    </div>
+    <div class="hero-poster reveal">
+      <a href="galeria.html"><img src="assets/cartaz.png" alt="Cartaz oficial da 53ª Feira do Livro de Santa Maria. Ilustração: Betina Menine Toniazzo." /></a>
+      <span class="cap">Cartaz oficial 2026</span>
+    </div>
+  </div>
+</section>
+
+<section class="stats" style="padding:52px 0">
+  <div class="wrap">
+    <div class="stat-grid">
+      <div class="stat reveal"><div class="n" data-count="258">0</div><div class="l">Lançamentos de livros</div></div>
+      <div class="stat reveal"><div class="n" data-count="40">0</div><div class="l">Coletâneas</div></div>
+      <div class="stat reveal"><div class="n" data-count="24">0</div><div class="l">Municípios gaúchos</div></div>
+      <div class="stat reveal"><div class="n" data-count="4">0</div><div class="l">Estados representados</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="vitrine">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eye">Vitrine</span>
+      <h2>Destaques da praça</h2>
+      <p>Uma seleção do que ninguém quer perder — espetáculos, concertos e encontros que dão o tom da 53ª edição.</p>
+    </div>
+    <div class="vgrid" id="vitrineGrid"></div>
+  </div>
+</section>
+
+<section class="page-sec" style="background:var(--lilas)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eye">Navegue pela Feira</span>
+      <h2>Tudo em um só lugar</h2>
+      <p>Escolha por onde começar. Cada área tem seu espaço, sempre atualizado pela organização.</p>
+    </div>
+    <div class="atalho-grid reveal">
+      <a class="atalho" href="programacao.html"><span class="ic">🎭</span><h3>Programação</h3><p>Toda a agenda, dia a dia, com filtros por categoria.</p><span class="go">Abrir →</span></a>
+      <a class="atalho" href="lancamentos.html"><span class="ic">📚</span><h3>Lançamentos</h3><p>Os 258 lançamentos de livros, por dia e horário.</p><span class="go">Abrir →</span></a>
+      <a class="atalho" href="maratona.html"><span class="ic">📖</span><h3>Maratona de Leitura</h3><p>Inscreva sua ação e veja quem já participa.</p><span class="go">Abrir →</span></a>
+      <a class="atalho" href="noticias.html"><span class="ic">📰</span><h3>Notícias</h3><p>Novidades, bastidores e comunicados da Feira.</p><span class="go">Abrir →</span></a>
+      <a class="atalho" href="galeria.html"><span class="ic">🖼️</span><h3>Galeria</h3><p>Cartaz, marca, fotos e vídeos da edição.</p><span class="go">Abrir →</span></a>
+      <a class="atalho" href="homenageados.html"><span class="ic">🏅</span><h3>Homenageados</h3><p>Patrono e homenageados da 53ª edição.</p><span class="go">Abrir →</span></a>
+      <a class="atalho" href="parceiros.html"><span class="ic">🤝</span><h3>Parceiros</h3><p>Quem realiza, patrocina e apoia a Feira.</p><span class="go">Abrir →</span></a>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/comum.js"></script>
+<script>
+async function renderDestaques(){
+  if(!window.fdl){document.getElementById('vitrine').style.display='none';return;}
+  const {data}=await window.fdl.from('fl_destaques').select('*').order('ordem').order('id');
+  if(!data||!data.length){document.getElementById('vitrine').style.display='none';return;}
+  document.getElementById('vitrineGrid').innerHTML=data.map(function(d){
+    var bg=d.imagem_url?("background-image:url('"+d.imagem_url+"');background-size:cover;background-position:center")
+                       :"background:linear-gradient(135deg,#5a3a80,#3d2557)";
+    var inner=(d.tag?'<span class="tag">'+escN(d.tag)+'</span>':'')+'<h3>'+escN(d.titulo)+'</h3>'+(d.subtitulo?'<p>'+escN(d.subtitulo)+'</p>':'');
+    if(d.link){var ext=/^https?:/.test(d.link)?' target="_blank" rel="noopener"':'';return '<a class="vcard" style="'+bg+'" href="'+escN(d.link)+'"'+ext+'>'+inner+'</a>';}
+    return '<article class="vcard" style="'+bg+'">'+inner+'</article>';
+  }).join('');
+}
+renderDestaques();
+</script>
+</body>
+</html>

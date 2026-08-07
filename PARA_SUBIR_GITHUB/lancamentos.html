@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lançamentos · 53ª Feira do Livro de Santa Maria</title>
+<meta name="description" content="Todos os lançamentos de livros da 53ª Feira do Livro de Santa Maria, organizados por dia e horário." />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/estilo.css" />
+</head>
+<body data-page="lancamentos.html">
+<div id="site-header"></div>
+
+<section class="page-head">
+  <div class="wrap">
+    <span class="eye">Dia a dia · 258 lançamentos</span>
+    <h1>Programação de lançamentos</h1>
+    <p>Todos os lançamentos de livros da 53ª Feira, organizados por dia e horário. Use a busca ou escolha o dia. Você também pode exportar tudo em A4 para impressão.</p>
+  </div>
+</section>
+
+<section class="page-sec">
+  <div class="wrap">
+    <button class="btn-export" onclick="exportPrograma('lancamentos')">⤓ Exportar lançamentos (A4 / PDF)</button>
+    <div class="toolbar" style="margin-top:14px">
+      <div class="search"><span>&#128269;</span><input type="text" placeholder="Buscar livro, autor ou cidade…" oninput="lancBusca(this.value)"></div>
+    </div>
+    <div class="days" id="lancDias"></div>
+    <div id="lancList" class="lanc-list"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<div id="printArea"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/comum.js"></script>
+<script>
+window.LANCAMENTOS=[];
+function escP(s){return (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+(function(){
+  var WD=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  var curDia='2026-08-'+defaultDia(), q='';
+  function esc(s){return (s||'').replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+  function buildChips(){
+    var dias=Array.from(new Set(LANCAMENTOS.map(function(x){return x.dia;}))).sort();
+    if(curDia!=='all' && dias.indexOf(curDia)<0 && dias.length) curDia=dias[0];
+    var chips=document.getElementById('lancDias');
+    chips.innerHTML='<button class="chip'+(curDia==='all'?' on':'')+'" onclick="lancSetDia(\'all\',this)">Todos</button>'+
+      dias.map(function(d){return '<button class="chip'+(d===curDia?' on':'')+'" onclick="lancSetDia(\''+d+'\',this)">'+d.slice(8,10)+'/08</button>';}).join('');
+    var a=chips.querySelector('.chip.on');if(a&&a.scrollIntoView)a.scrollIntoView({inline:'center',block:'nearest'});
+  }
+  window.lancSetDia=function(d,el){curDia=d;var cs=document.querySelectorAll('#lancDias .chip');for(var i=0;i<cs.length;i++)cs[i].classList.remove('on');el.classList.add('on');render();};
+  window.lancBusca=function(v){q=(v||'').toLowerCase().trim();render();};
+  function render(){
+    var list=LANCAMENTOS.filter(function(x){return (curDia==='all'||x.dia===curDia)&&(!q||x.texto.toLowerCase().indexOf(q)>=0);});
+    var box=document.getElementById('lancList');
+    if(!list.length){box.innerHTML='<div class="empty">Nenhum lançamento encontrado.</div>';return;}
+    var html='',lastD='',lastH='';
+    list.forEach(function(x){
+      if(x.dia!==lastD){var dt=new Date(x.dia+'T12:00:00');html+='<h3 class="lanc-day">'+x.dia.slice(8,10)+' de agosto · '+WD[dt.getDay()]+'</h3>';lastD=x.dia;lastH='';}
+      if(x.hora!==lastH){html+='<div class="lanc-hora">'+(esc(x.hora)||'—')+'</div>';lastH=x.hora;}
+      var t=x.texto, i=t.search(/\s[–-]\s/), ti=i>0?t.slice(0,i):t, resto=i>0?t.slice(i+3):'';
+      html+='<div class="lanc-item"><span class="lanc-tit">'+esc(ti)+'</span>'+(resto?' <span class="lanc-meta">— '+esc(resto)+'</span>':'')+'</div>';
+    });
+    box.innerHTML=html;
+  }
+  async function load(){
+    if(window.fdl){
+      try{
+        var r=await window.fdl.from('fl_lancamentos').select('dia,hora,titulo,autor,cidade').order('dia').order('ordem');
+        if(r.data && r.data.length){
+          window.LANCAMENTOS=r.data.map(function(x){
+            var parts=[x.titulo,x.autor,x.cidade].filter(Boolean);
+            return {dia:String(x.dia).slice(0,10), hora:x.hora||'', texto:parts.join(' – ')};
+          });
+        }
+      }catch(e){}
+    }
+    buildChips();render();
+  }
+  load();
+})();
+function exportPrograma(){
+  var WD=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  var birds='<svg class="pr-birds" viewBox="0 0 120 34" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"><path d="M8 24 Q16 10 24 22 Q32 10 40 22"/><path d="M62 16 Q69 5 76 15 Q83 5 90 15"/></svg>';
+  var body='';var dias=Array.from(new Set((window.LANCAMENTOS||[]).map(x=>x.dia))).sort();
+  dias.forEach(function(d){
+    var dt=new Date(d+'T12:00:00');
+    body+='<div class="pr-day">'+d.slice(8,10)+' de agosto · '+WD[dt.getDay()]+'</div>';
+    var inner='',lastH='';
+    window.LANCAMENTOS.filter(x=>x.dia===d).forEach(function(x){
+      if(x.hora!==lastH){inner+='<div class="pr-hora">'+(escP(x.hora)||'—')+'</div>';lastH=x.hora;}
+      var t=x.texto,i=t.search(/\s[–-]\s/),ti=i>0?t.slice(0,i):t,resto=i>0?t.slice(i+3):'';
+      inner+='<div class="pr-item"><span class="t">'+escP(ti)+'</span>'+(resto?' <span class="m">— '+escP(resto)+'</span>':'')+'</div>';
+    });
+    body+='<div class="pr-cols">'+inner+'</div>';
+  });
+  document.getElementById('printArea').innerHTML='<div class="pr-head">'+birds+'<div class="pr-mark">53ª <em>feira do livro</em> de Santa Maria</div><div class="pr-sub">7 a 22 de agosto de 2026 · Praça Saldanha Marinho · Celebrando os 120 anos de Mário Quintana</div><div class="pr-title">Programação de Lançamentos</div></div><div class="pr-body">'+body+'</div><div class="pr-foot">Realização: Prefeitura de Santa Maria — Secretarias de Cultura e de Educação · @feiradolivrosm · www.feiradolivrosm.com</div>';
+  window.print();
+}
+</script>
+</body>
+</html>

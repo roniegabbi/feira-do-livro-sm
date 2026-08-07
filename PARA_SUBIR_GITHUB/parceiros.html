@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Parceiros · 53ª Feira do Livro de Santa Maria</title>
+<meta name="description" content="Parceiros e patrocinadores da 53ª Feira do Livro de Santa Maria." />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/estilo.css" />
+</head>
+<body data-page="parceiros.html">
+<div id="site-header"></div>
+
+<section class="page-head">
+  <div class="wrap">
+    <span class="eye">Quem faz acontecer</span>
+    <h1>Parceiros e patrocinadores</h1>
+    <p>A 53ª Feira do Livro de Santa Maria é realizada graças a estas instituições.</p>
+  </div>
+</section>
+
+<section class="page-sec">
+  <div class="wrap">
+    <div id="parceirosGrid" class="reveal"></div>
+    <div id="parcEmpty" class="empty" style="display:none">Parceiros em breve.</div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/comum.js"></script>
+<script>
+async function renderParceiros(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_parceiros').select('*').order('ordem').order('nome');
+  const wrap=document.getElementById('parceirosGrid');
+  if(!data||!data.length){document.getElementById('parcEmpty').style.display='';return;}
+  const ordem=['Realização','Patrocínio','Apoio','Incentivo','Produção'];
+  const grupos={};data.forEach(p=>{(grupos[p.tipo||'Parceiros']=grupos[p.tipo||'Parceiros']||[]).push(p);});
+  const tipos=Object.keys(grupos).sort((a,b)=>{const ia=ordem.indexOf(a),ib=ordem.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib);});
+  wrap.innerHTML=tipos.map(t=>`<div class="parc-group">
+    <div class="parc-tipo">${escN(t)}</div>
+    <div class="parc-grid">${grupos[t].map(p=>{
+      const inner=p.logo_url?`<img src="${escN(p.logo_url)}" alt="${escN(p.nome)}" loading="lazy">`:`<span style="color:#6b6280;font-weight:700;font-size:.85rem">${escN(p.nome)}</span>`;
+      return p.site?`<a class="parc-logo" href="${escN(p.site)}" target="_blank" rel="noopener" title="${escN(p.nome)}">${inner}</a>`:`<div class="parc-logo" title="${escN(p.nome)}">${inner}</div>`;
+    }).join('')}</div></div>`).join('');
+}
+renderParceiros();
+</script>
+</body>
+</html>

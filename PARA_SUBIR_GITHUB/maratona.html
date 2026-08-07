@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Maratona de Leitura · 53ª Feira do Livro de Santa Maria</title>
+<meta name="description" content="Maratona de Leitura da 53ª Feira do Livro de Santa Maria — 10 de agosto. Inscreva sua ação e veja quem já participa." />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/estilo.css" />
+</head>
+<body data-page="maratona.html">
+<div id="site-header"></div>
+
+<section class="maratona" id="maratona" style="padding-top:64px">
+  <div class="wrap">
+    <div class="mar-grid">
+      <div class="mar-card"><img src="assets/maratona-card.jpg" alt="Maratona de Leitura da Feira do Livro de Santa Maria" loading="lazy"></div>
+      <div class="mar-info">
+        <span class="eye" style="color:var(--gold)">10 de agosto · 9h às 22h</span>
+        <h2>Maratona de Leitura</h2>
+        <p>Um dia inteiro para ler! Escolas, empresas, comércios e toda a comunidade são convidados a criar uma ação de leitura e espalhar a literatura pela cidade — com sua turma, equipe, colegas, vizinhos ou clientes.</p>
+        <p style="margin:.2rem 0 1rem;font-weight:700;color:var(--gold)">✓ As inscrições foram encerradas. Confira abaixo as ações confirmadas.</p>
+        <div class="mar-actions">
+          <a class="btn btn-p" href="#maratona-lista">Ver quem se inscreveu →</a>
+        </div>
+      </div>
+    </div>
+    <div id="maratona-lista" class="mar-lista">
+      <h3>Ações inscritas <span id="marCount" style="opacity:.75;font-size:1rem;font-family:'Inter'"></span></h3>
+      <div class="toolbar"><div class="search"><span>🔍</span><input id="marBusca" type="text" placeholder="Buscar por escola, empresa ou atividade…" oninput="renderMaratona()" /></div></div>
+      <div id="marGrid" class="mar-grid-list"></div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<div class="noticia-modal" id="maratonaModal" onclick="if(event.target===this)closeMaratona()">
+  <article class="noticia-box" id="maratonaBox"></article>
+</div>
+<div class="noticia-modal" id="maratonaFormModal" onclick="if(event.target===this)closeMaratonaForm()">
+  <article class="noticia-box" style="max-width:560px">
+    <button class="nm-close" onclick="closeMaratonaForm()" aria-label="Fechar">✕</button>
+    <div class="nm-inner mar-form">
+      <h2 style="font-size:1.5rem;color:var(--roxo-2);margin:.2rem 0">Inscrever ação na Maratona</h2>
+      <p style="color:#6b6280;font-size:.9rem;margin:.2rem 0 .4rem">Preencha os dados da sua ação de leitura. A inscrição é publicada após aprovação da organização.</p>
+      <label>Nome da escola, empresa ou pessoa *</label><input id="mf-nome" />
+      <div class="row"><div><label>Horário</label><input id="mf-horario" placeholder="Ex.: 10h às 12h" /></div>
+        <div><label>Aberta ao público?</label><select id="mf-aberta"><option value="Não">Não — exclusiva</option><option value="Sim">Sim — aberta</option></select></div></div>
+      <label>Endereço</label><input id="mf-endereco" />
+      <label>Atividade (título) *</label><input id="mf-atividade" />
+      <label>Resumo da proposta</label><textarea id="mf-resumo" rows="4"></textarea>
+      <label>Se aberta, como participar?</label><input id="mf-detalhes" />
+      <div style="margin-top:1rem"><button class="btn btn-p" onclick="submitMaratona()" style="width:100%;justify-content:center">Enviar inscrição</button></div>
+      <div id="mf-ok" style="display:none;background:#e7f6f3;color:#1d7a5f;border-radius:10px;padding:.8rem;margin-top:.8rem;text-align:center;font-weight:600">✓ Inscrição recebida! Será publicada após aprovação da organização.</div>
+    </div>
+  </article>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/comum.js"></script>
+<script>
+let MARATONA=[];
+async function renderMaratona(){
+  if(!window.fdl)return;
+  if(!MARATONA.length){
+    const {data}=await window.fdl.from('fl_maratona').select('*').eq('aprovado',true).order('horario');
+    MARATONA=data||[];
+  }
+  const q=(document.getElementById('marBusca').value||'').toLowerCase().trim();
+  const list=MARATONA.filter(function(m){return !q||((m.nome||'')+' '+(m.atividade||'')+' '+(m.endereco||'')).toLowerCase().indexOf(q)>=0;});
+  document.getElementById('marCount').textContent='· '+MARATONA.length+' ações pela cidade';
+  const grid=document.getElementById('marGrid');
+  if(!list.length){grid.innerHTML='<div style="color:#6b6280;grid-column:1/-1">Nenhuma ação encontrada.</div>';return;}
+  grid.innerHTML=list.map(function(m){
+    return '<article class="mar-item" onclick="openMaratona('+m.id+')">'+
+      '<div class="h">'+escN(m.horario||'—')+'</div>'+
+      '<h4>'+escN(m.atividade||'Ação de leitura')+'</h4>'+
+      '<div class="who">'+escN(m.nome||'')+'</div>'+
+      '<span class="badge '+(m.aberta==='Sim'?'aberta':'fechada')+'">'+(m.aberta==='Sim'?'Aberta ao público':'Exclusiva')+'</span>'+
+    '</article>';
+  }).join('');
+}
+function openMaratona(id){
+  var m=MARATONA.find(function(x){return x.id===id;});if(!m)return;
+  document.getElementById('maratonaBox').innerHTML=
+    '<button class="nm-close" onclick="closeMaratona()" aria-label="Fechar">✕</button>'+
+    '<div class="ev-top" style="background:#5a3a80"><span class="ev-top-cat">Maratona de Leitura · 10/08</span><div class="ev-top-when">'+escN(m.horario||'')+'</div></div>'+
+    '<div class="nm-inner"><h2>'+escN(m.atividade||'Ação de leitura')+'</h2>'+
+    '<p class="ev-grupo">'+escN(m.nome||'')+'</p>'+
+    (m.endereco?'<p class="ev-local">📍 '+escN(m.endereco)+'</p>':'')+
+    '<p style="margin:.2rem 0 .6rem"><span style="font-size:.7rem;font-weight:800;padding:.18rem .65rem;border-radius:100px;background:'+(m.aberta==='Sim'?'#2f9e8f':'#efe8f8')+';color:'+(m.aberta==='Sim'?'#fff':'#5a3a80')+'">'+(m.aberta==='Sim'?'Aberta ao público':'Exclusiva da instituição')+'</span></p>'+
+    (m.resumo?'<div class="nm-content"><p>'+escN(m.resumo).replace(/\n/g,'<br>')+'</p></div>':'')+
+    (m.detalhes?'<p style="color:#6b6280;font-size:.9rem;margin-top:.4rem"><b>Como participar:</b> '+escN(m.detalhes)+'</p>':'')+
+    '</div>';
+  document.getElementById('maratonaModal').classList.add('on');document.body.style.overflow='hidden';
+}
+function closeMaratona(){document.getElementById('maratonaModal').classList.remove('on');document.body.style.overflow='';}
+function openMaratonaForm(){document.getElementById('mf-ok').style.display='none';document.getElementById('maratonaFormModal').classList.add('on');document.body.style.overflow='hidden';}
+function closeMaratonaForm(){document.getElementById('maratonaFormModal').classList.remove('on');document.body.style.overflow='';}
+async function submitMaratona(){
+  var nome=document.getElementById('mf-nome').value.trim();
+  var atividade=document.getElementById('mf-atividade').value.trim();
+  if(!nome||!atividade){toast('Preencha nome e atividade');return;}
+  if(!window.fdl){toast('Sem conexão no momento',true);return;}
+  var row={nome:nome,atividade:atividade,
+    horario:document.getElementById('mf-horario').value.trim()||null,
+    endereco:document.getElementById('mf-endereco').value.trim()||null,
+    resumo:document.getElementById('mf-resumo').value.trim()||null,
+    aberta:document.getElementById('mf-aberta').value,
+    detalhes:document.getElementById('mf-detalhes').value.trim()||null,aprovado:false};
+  var res=await window.fdl.from('fl_maratona').insert(row);
+  if(res.error){toast('Não foi possível enviar agora',true);return;}
+  document.getElementById('mf-ok').style.display='block';
+  ['mf-nome','mf-horario','mf-endereco','mf-atividade','mf-resumo','mf-detalhes'].forEach(function(id){document.getElementById(id).value='';});
+  toast('✓ Inscrição enviada!');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeMaratona();closeMaratonaForm();}});
+renderMaratona();
+</script>
+</body>
+</html>

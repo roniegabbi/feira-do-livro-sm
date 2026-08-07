@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Homenageados · 53ª Feira do Livro de Santa Maria</title>
+<meta name="description" content="Patrono e homenageados da 53ª Feira do Livro de Santa Maria." />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/estilo.css" />
+</head>
+<body data-page="homenageados.html">
+<div id="site-header"></div>
+
+<section class="page-head">
+  <div class="wrap">
+    <span class="eye">Homenagens</span>
+    <h1>Patrono e Homenageados</h1>
+    <p>As personalidades celebradas na 53ª edição da Feira do Livro de Santa Maria.</p>
+  </div>
+</section>
+
+<section class="homenagens" id="homenagens" style="padding-top:48px">
+  <div class="wrap">
+    <div class="hom-grid reveal">
+      <article class="hom-card">
+        <div class="hom-foto" id="patAvatar">DT</div>
+        <div class="hom-body">
+          <span class="hom-badge">Patrono da 53ª edição</span>
+          <h3 id="patNome">Daniel Tonetto</h3>
+          <p id="patDesc">Lançamento de “A Cor Que Nos Separa: A Origem” · 11/08 · Noite do Patrono em 13/08, no Theatro Treze de Maio.</p>
+        </div>
+      </article>
+      <article class="hom-card">
+        <div class="hom-foto" id="homAvatar">RP</div>
+        <div class="hom-body">
+          <span class="hom-badge">Homenageada da 53ª edição</span>
+          <h3 id="homNome">Ruth Sopher Pereyron</h3>
+          <p id="homDesc">Professora aposentada da UFSM e diretora do Theatro Treze de Maio, referência na vida cultural de Santa Maria.</p>
+        </div>
+      </article>
+      <article class="hom-card" id="hom2Card" style="display:none">
+        <div class="hom-foto" id="hom2Avatar">·</div>
+        <div class="hom-body">
+          <span class="hom-badge">Homenageado(a) da 53ª edição</span>
+          <h3 id="hom2Nome"></h3>
+          <p id="hom2Desc"></p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/comum.js"></script>
+<script>
+function setFoto(elId,url,nome){if(!url)return;const a=document.getElementById(elId);if(!a)return;a.innerHTML=`<img src="${url}" alt="${escN(nome||'')}">`;}
+async function loadPatrono(){
+  if(!window.fdl)return;
+  const {data}=await window.fdl.from('fl_config').select('*');
+  if(!data)return;
+  const m={};data.forEach(r=>m[r.chave]=r.valor);
+  if(m.patrono_nome)document.getElementById('patNome').textContent=m.patrono_nome;
+  if(m.patrono_desc)document.getElementById('patDesc').textContent=m.patrono_desc;
+  setFoto('patAvatar',m.patrono_foto,m.patrono_nome);
+  if(m.homenageada_nome)document.getElementById('homNome').textContent=m.homenageada_nome;
+  if(m.homenageada_desc)document.getElementById('homDesc').textContent=m.homenageada_desc;
+  setFoto('homAvatar',m.homenageada_foto,m.homenageada_nome);
+  const c2=document.getElementById('hom2Card');
+  if(m.homenageado2_nome){
+    c2.style.display='';
+    document.getElementById('hom2Nome').textContent=m.homenageado2_nome;
+    document.getElementById('hom2Desc').textContent=m.homenageado2_desc||'';
+    setFoto('hom2Avatar',m.homenageado2_foto,m.homenageado2_nome);
+  }else{c2.style.display='none';}
+}
+loadPatrono();
+</script>
+</body>
+</html>
